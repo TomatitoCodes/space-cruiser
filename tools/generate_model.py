@@ -33,6 +33,7 @@ COLORS = {
     "hull": (122, 124, 130),
     "dark": (61, 63, 69),
     "pod": (36, 36, 42),
+    "chrome": (168, 176, 192),
     "yellow": (255, 220, 70),
     "orange": (255, 153, 35),
     "frame": (153, 203, 235),
@@ -375,11 +376,29 @@ def build():
         box("fuego_2", fx(31.5, 34.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
         box("fuego_nucleo", fx(28.5, 31.5), 27, 31, 6, 11, "glow", "yellow")
 
-    # --- Patas
+    # --- Patas: tren de aterrizaje de nave espacial (anclaje al casco, manguito, pistón, aletas y plato de apoyo)
     for i, (sx, sz) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
-        x0, x1 = (-17, -11) if sx < 0 else (11, 17)
-        z0, z1 = (-17, -11) if sz < 0 else (11, 17)
-        add("pata_%d" % i, "body", (x0, 2, z0), (x1, 10, z1), "dark")
+        cx, cz = sx * 14.5, sz * 14.5
+
+        def leg(name, hx, y0, y1, slot, group="body", hz=None, dx=0.0, dz=0.0, i=i, cx=cx, cz=cz):
+            hz = hx if hz is None else hz
+            add("pata_%d_%s" % (i, name), group, (cx + dx - hx, y0, cz + dz - hz), (cx + dx + hx, y1, cz + dz + hz), slot)
+
+        leg("anclaje", 3.8, 8.0, 10.0, "dark")
+        leg("anclaje_placa", 3.0, 7.4, 8.0, "pod")
+        leg("manguito", 2.2, 4.6, 7.4, "dark")
+        leg("manguito_anillo", 2.5, 6.0, 6.7, "chrome")
+        leg("piston", 1.1, 2.0, 4.6, "chrome")
+        leg("pie_base", 4.2, 0.0, 1.2, "dark")
+        leg("pie_cuello", 2.8, 1.2, 2.2, "dark")
+        # aletas de refuerzo en escalera, hacia fuera en X y en Z
+        for st, (d0, d1, h0, h1) in enumerate(((1.8, 4.0, 2.2, 3.4), (1.8, 3.0, 3.4, 5.4))):
+            leg("aleta_x_%d" % st, (d1 - d0) / 2, h0, h1, "dark", hz=0.5, dx=sx * (d0 + d1) / 2)
+            leg("aleta_z_%d" % st, 0.5, h0, h1, "dark", hz=(d1 - d0) / 2, dz=sz * (d0 + d1) / 2)
+        # luces del plato (a brillo máximo)
+        leg("pie_luz_x", 1.6, 1.2, 1.5, "cyan", "glow", hz=0.3, dz=sz * 3.8, dx=0.0)
+        leg("pie_luz_z", 0.3, 1.2, 1.5, "cyan", "glow", hz=1.6, dx=sx * 3.8, dz=0.0)
+        leg("pie_marca", 0.8, 1.2, 1.5, "yellow", "glow", hz=0.8, dx=sx * 1.4, dz=sz * 1.4)
 
 
 def checksum():
