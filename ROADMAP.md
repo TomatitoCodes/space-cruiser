@@ -8,7 +8,8 @@ Mod de Minecraft para **Fabric 1.21.1**. Nave pilotable inspirada en la Space Cr
 - [x] Repositorio en GitHub (`space-cruiser`) y compilación del jar con GitHub Actions
 - [x] Modelo propio (casco octogonal, cúpula de cristal, propulsores tipo cubo de basura) a escala 14/16
 - [x] Al bajarse, el jugador aparece junto a la nave
-- [ ] GPS del cockpit y nuevo interior (en curso, v1.7)
+- [x] GPS del cockpit y nuevo interior (v1.7)
+- [x] Cámara de cabina y clic derecho sobre la pantalla del GPS (v1.8)
 
 ## Visión
 
@@ -46,7 +47,7 @@ C = cristal, E = elytra, D = diamante, S = caparazón de shulker
 Un "navegador GPS" con pantalla dentro de la nave. En primera persona, al interactuar con la pantalla se abre su interfaz.
 
 **Fase 1: GPS básico** (v1.7)
-- [x] Pantalla en el cockpit, interactuable en primera persona (clic derecho mirándola, o tecla `G`)
+- [x] Pantalla en el cockpit, interactuable en primera persona: clic derecho mirándola (con aviso junto a la mirilla), o tecla `G`
 - [x] Datos en vivo: coordenadas, dimensión, rumbo y altura
 - [x] Selector de dimensión de destino (Overworld / Nether / End)
 - [x] Llegada en las mismas coordenadas (con conversión 1:8 del Nether), buscando un punto seguro libre
@@ -71,8 +72,8 @@ Un "navegador GPS" con pantalla dentro de la nave. En primera persona, al intera
 ### 4. Manejo y cámara
 
 - [ ] Cámara en tercera persona al pilotar (distancia, ángulo, zoom)
-- [ ] Cámara en primera persona dentro del cockpit, necesaria para usar el GPS
-- [ ] Cambio entre ambas cámaras
+- [x] Cámara en primera persona dentro del cockpit, necesaria para usar el GPS: se activa sola al subir y se recupera la anterior al bajar
+- [x] Cambio entre ambas cámaras con la tecla `V`
 - [ ] Controles de vuelo: aceleración, frenado, subir y bajar
 - [ ] Velocidad máxima, inercia y giro
 - [ ] Mejorar la experiencia de manejo en general (se concretará probando la nave)

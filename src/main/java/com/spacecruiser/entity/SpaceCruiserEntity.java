@@ -47,9 +47,9 @@ public class SpaceCruiserEntity extends Entity {
 			DataTracker.registerData(SpaceCruiserEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
 	// Posición de la pantalla del GPS respecto al centro de la nave (bloques a escala 1).
-	private static final double GPS_FORWARD = 1.05;
-	private static final double GPS_UP = 1.3;
-	private static final double GPS_RADIUS = 0.9;
+	private static final double GPS_FORWARD = 1.03;
+	private static final double GPS_UP = 1.27;
+	private static final double GPS_RADIUS = 0.5;
 
 	private static final double ACCELERATION = 0.06;
 	private static final double VERTICAL_ACCELERATION = 0.04;

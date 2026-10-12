@@ -4,8 +4,9 @@ import com.spacecruiser.ModEntities;
 import com.spacecruiser.SpaceCruiserMod;
 import com.spacecruiser.entity.SpaceCruiserEntity;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.minecraft.util.TypedActionResult;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.option.Perspective;
+import net.minecraft.text.Text;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
@@ -58,13 +59,41 @@ public class SpaceCruiserClient implements ClientModInitializer {
 				client.setScreen(new GpsScreen());
 			}
 		};
-		UseItemCallback.EVENT.register((player, world, hand) -> {
-			if (world.isClient && client.currentScreen == null
-					&& player.getVehicle() instanceof SpaceCruiserEntity ship && ship.isLookingAtScreen(player)) {
-				client.setScreen(new GpsScreen());
-				return TypedActionResult.success(player.getStackInHand(hand));
+
+		// Cámara de cabina: al subir a la nave se pasa a primera persona (desde dentro se alcanza la consola)
+		// y al bajar se recupera la que tenías. La tecla V alterna entre cabina y exterior.
+		KeyBinding cameraKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key.spacecruiser.camera",
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_V,
+				"key.categories.movement"
+		));
+		final Perspective[] saved = {null};
+		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+			boolean riding = mc.player != null && mc.player.getVehicle() instanceof SpaceCruiserEntity;
+			if (riding && saved[0] == null) {
+				saved[0] = mc.options.getPerspective();
+				mc.options.setPerspective(Perspective.FIRST_PERSON);
+			} else if (!riding && saved[0] != null) {
+				mc.options.setPerspective(saved[0]);
+				saved[0] = null;
 			}
-			return TypedActionResult.pass(player.getStackInHand(hand));
+			while (cameraKey.wasPressed()) {
+				if (riding) {
+					mc.options.setPerspective(mc.options.getPerspective().isFirstPerson()
+							? Perspective.THIRD_PERSON_BACK : Perspective.FIRST_PERSON);
+				}
+			}
+		});
+
+		// Aviso junto a la mirilla cuando apuntas a la pantalla del GPS.
+		HudRenderCallback.EVENT.register((ctx, tickCounter) -> {
+			if (client.player != null && client.currentScreen == null
+					&& client.player.getVehicle() instanceof SpaceCruiserEntity ship
+					&& client.options.getPerspective().isFirstPerson() && ship.isLookingAtScreen(client.player)) {
+				ctx.drawCenteredTextWithShadow(client.textRenderer, Text.translatable("hud.spacecruiser.gps_hint"),
+						ctx.getScaledWindowWidth() / 2, ctx.getScaledWindowHeight() / 2 + 12, 0xFF6EE6FF);
+			}
 		});
 		SpaceCruiserEntity.ascendInput = () -> client.options.jumpKey.isPressed();
 		SpaceCruiserEntity.descendInput = descendKey::isPressed;

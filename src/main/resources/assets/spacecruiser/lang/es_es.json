@@ -27,5 +27,7 @@
   "gui.spacecruiser.gps.dir.s": "S",
   "gui.spacecruiser.gps.dir.sw": "SO",
   "gui.spacecruiser.gps.dir.w": "O",
-  "gui.spacecruiser.gps.dir.nw": "NO"
+  "gui.spacecruiser.gps.dir.nw": "NO",
+  "key.spacecruiser.camera": "Cámara cabina / exterior (Space Cruiser)",
+  "hud.spacecruiser.gps_hint": "Clic derecho: abrir GPS"
 }
