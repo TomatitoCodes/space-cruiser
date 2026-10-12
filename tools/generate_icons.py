@@ -47,23 +47,23 @@ PALETTE = {
 }
 
 ICONS = {
-    # Reactor: cilindro con ventanilla al núcleo, collares con luces de redstone
+    # Reactor: un cubo de basura con la tapa entreabierta y el núcleo goteando energía
     "reactor": [
         "................",
-        "................",
-        "....11111111....",
-        "...1HHLLLLMG1...",
-        "..1HLRLMMRGGK1..",
-        "..1HL111111gK1..",
-        "..1HL1oOOo1gK1..",
-        "..1HL1OYYO1gK1..",
-        "..1HL1OyyO1gK1..",
-        "..1HL1OYYO1gK1..",
-        "..1HL1oOOo1gK1..",
-        "..1HL111111gK1..",
-        "..1HLRLMMRGGK1..",
-        "...1LMMGGGKK1...",
-        "....11111111....",
+        "......1111......",
+        ".....1HLLG1.....",
+        "..1HHLLLLMGGK1..",
+        ".1HLLLLMMMGGGK1.",
+        ".1oOYyyYOOYyYo1.",
+        "..1HLMLMOMLGK1..",
+        "..1HLMLMoMLGK1..",
+        "..1HGGGGGGGGK1..",
+        "..1HLMLMLMLGK1..",
+        "..1HLMLMLMLGK1..",
+        "..1HLMLMLMLGK1..",
+        "..1HLMLMLMLGK1..",
+        "..1gGGGGGGGGK1..",
+        "..111111111111..",
         "................",
     ],
     # Casco: placa octogonal biselada con panel de caparazón de shulker y remaches
