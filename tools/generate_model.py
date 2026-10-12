@@ -39,6 +39,7 @@ COLORS = {
     "frame": (153, 203, 235),
     "seat": (112, 78, 52),
     "glass": (160, 207, 235),
+    "lamp": (255, 243, 200),
     "potion": (70, 225, 95),
     "potion2": (45, 190, 80),
     "cork": (150, 108, 68),
@@ -383,6 +384,16 @@ def build():
         box("fuego_1", fx(25.5, 28.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
         box("fuego_2", fx(31.5, 34.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
         box("fuego_nucleo", fx(28.5, 31.5), 27, 31, 6, 11, "glow", "yellow")
+
+    # --- Dos focos delanteros (lados 1 y 7, a cada lado del morro): soporte, carcasa, visera y lente luminosa
+    for L in (1, 7):
+        add("foco_%d_base" % L, "body", (-2.3, 16.4, -R0 - 0.2), (2.3, 17.4, -R0 + 4.4), "dark", L)
+        add("foco_%d_carcasa" % L, "body", (-1.9, 17.4, -R0 - 1.2), (1.9, 20.6, -R0 + 3.8), "dark", L)
+        add("foco_%d_visera" % L, "body", (-2.2, 20.6, -R0 - 1.8), (2.2, 21.2, -R0 + 3.8), "pod", L)
+        add("foco_%d_brazo_izq" % L, "body", (-2.6, 17.4, -R0 + 0.3), (-1.9, 20.2, -R0 + 3.0), "pod", L)
+        add("foco_%d_brazo_der" % L, "body", (1.9, 17.4, -R0 + 0.3), (2.6, 20.2, -R0 + 3.0), "pod", L)
+        add("foco_%d_aro" % L, "body", (-1.5, 17.8, -R0 - 1.7), (1.5, 20.2, -R0 - 1.2), "pod", L)
+        add("foco_%d_lente" % L, "glow", (-1.1, 18.2, -R0 - 1.95), (1.1, 19.8, -R0 - 1.7), "lamp", L)
 
     # --- Patas: tren de aterrizaje de nave espacial (anclaje al casco, manguito, pistón, aletas y plato de apoyo)
     for i, (sx, sz) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
