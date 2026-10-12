@@ -21,11 +21,15 @@ import generate_model as gm  # noqa: E402
 ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, "src/main/resources/assets/spacecruiser/textures/item/space_cruiser.png")
 
-AZIMUTH = -38.0     # grados: negativo = el morro apunta hacia la izquierda de la imagen
-ELEVATION = 30.0    # grados de inclinación de la cámara
+AZIMUTH = float(os.environ.get("ICON_AZ", -12.0))     # negativo = el morro apunta hacia la izquierda
+ELEVATION = float(os.environ.get("ICON_EL", 34.0))    # grados de inclinación de la cámara
+PALETTE_COLORS = int(os.environ.get("ICON_COLORS", 22))  # 0 = sin reducir la paleta
+SPEC = float(os.environ.get("ICON_SPEC", 0.6))        # brillo especular en el cristal (0..1)
+SATURATION = float(os.environ.get("ICON_SAT", 1.3))   # saturación final del icono
+GLASS_COLOR = (170, 222, 252)
 SUPER = 1024        # lado del render antes de reducir
 OUTLINE = (28, 29, 34)
-GLASS_ALPHA = 0.26
+GLASS_ALPHA = float(os.environ.get("ICON_GLASS", 0.72))
 
 
 def rx(p, a):
@@ -192,8 +196,10 @@ def main():
     glass_faces = [it for it in proj if it[5] and float(np.dot(it[2], cam)) > 0]
     glass_faces.sort(key=lambda it: sum(it[1]) / 4.0)
     for p2, close, n1, col, emis, glass in glass_faces:
-        shade = 0.85 + 0.15 * max(0.0, float(np.dot(n1, light)))
-        color = [min(255.0, col[k] * shade) for k in range(3)]
+        ndl = max(0.0, float(np.dot(n1, light)))
+        base = GLASS_COLOR
+        spec = max(0.0, (ndl - 0.45) / 0.55) * SPEC
+        color = [min(255.0, (base[k] * (0.85 + 0.15 * ndl)) * (1 - spec) + 255.0 * spec) for k in range(3)]
         raster(p2, close, color, GLASS_ALPHA, False, ztest_eps=0.5)
 
     img[:, :, 3] *= 255.0   # el alfa se acumuló como 0..1
@@ -208,6 +214,15 @@ def main():
     out = np.zeros((size, size, 4), dtype=np.uint8)
     out[solid, :3] = np.clip(rgb[solid], 0, 255).astype(np.uint8)
     out[solid, 3] = 255
+    if SATURATION != 1.0:
+        from PIL import ImageEnhance
+        sat = ImageEnhance.Color(Image.fromarray(out[:, :, :3], "RGB")).enhance(SATURATION)
+        out[solid, :3] = np.array(sat)[solid]
+    if PALETTE_COLORS:
+        # Paleta reducida: limpia el ruido de los promedios y da aspecto de pixel art.
+        q = Image.fromarray(out[:, :, :3], "RGB").quantize(
+            colors=PALETTE_COLORS, method=Image.MEDIANCUT, dither=Image.NONE).convert("RGB")
+        out[solid, :3] = np.array(q)[solid]
     # Contorno oscuro de 1 px alrededor de la silueta.
     pad = np.pad(solid, 1)
     neigh = pad[:-2, 1:-1] | pad[2:, 1:-1] | pad[1:-1, :-2] | pad[1:-1, 2:]
