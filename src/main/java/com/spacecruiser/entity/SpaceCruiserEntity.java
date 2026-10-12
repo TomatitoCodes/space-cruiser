@@ -102,7 +102,7 @@ public class SpaceCruiserEntity extends Entity {
 		this.dataTracker.set(BATTERY, MathHelper.clamp(value, 0.0f, 10.0f));
 	}
 
-	/** El piloto va PILOT_BACK bloques (2 px) más atrás que el centro, donde está el asiento. */
+	/** El piloto va 2 px más atrás, sentado: las caderas a la altura del asiento (los pies a ras del suelo de la nave). */
 	@Override
 	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		if (!this.hasPassenger(passenger)) {
@@ -113,7 +113,7 @@ public class SpaceCruiserEntity extends Entity {
 		double back = (2.0 / 16.0) * s;
 		positionUpdater.accept(passenger,
 				this.getX() + Math.sin(yawRad) * back,
-				this.getY() + 1.0 * s,
+				this.getY() + 0.05 * s,
 				this.getZ() - Math.cos(yawRad) * back);
 	}
 

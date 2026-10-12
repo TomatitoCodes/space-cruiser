@@ -179,10 +179,10 @@ public final class SpaceCruiserModel {
 		c(body_lado0, "consola_panel_0", 274, 179, -7.0f, -1.5f, 0.0f, 14.0f, 1.5f, 3.9f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
 		c(body_lado0, "consola_labio_0", 82, 387, -7.3f, -19.0f, 14.3f, 14.6f, 0.7f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado0, "volante_base", 317, 336, -2.2f, -20.4f, 14.2f, 4.4f, 1.4f, 2.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(body_lado0, "volante_columna", 139, 159, -0.9f, -6.0f, -0.7f, 1.8f, 6.0f, 1.4f, 0.0f, -19.5f, 15.5f, -22.0f, 0.0f);
-		c(body_lado0, "volante_barra", 467, 382, -4.8f, -6.2f, -0.7f, 9.6f, 1.2f, 1.4f, 0.0f, -19.5f, 15.5f, -22.0f, 0.0f);
-		c(body_lado0, "volante_mango_izq", 445, 170, -5.0f, -7.1f, -0.8f, 1.2f, 4.6f, 1.6f, 0.0f, -19.5f, 15.5f, -22.0f, 0.0f);
-		c(body_lado0, "volante_mango_der", 437, 170, 3.8f, -7.1f, -0.8f, 1.2f, 4.6f, 1.6f, 0.0f, -19.5f, 15.5f, -22.0f, 0.0f);
+		c(body_lado0, "volante_columna", 139, 159, -0.9f, -6.0f, -0.7f, 1.8f, 6.0f, 1.4f, 0.0f, -19.5f, 15.5f, 22.0f, 0.0f);
+		c(body_lado0, "volante_barra", 467, 382, -4.8f, -6.2f, -0.7f, 9.6f, 1.2f, 1.4f, 0.0f, -19.5f, 15.5f, 22.0f, 0.0f);
+		c(body_lado0, "volante_mango_izq", 445, 170, -5.0f, -7.1f, -0.8f, 1.2f, 4.6f, 1.6f, 0.0f, -19.5f, 15.5f, 22.0f, 0.0f);
+		c(body_lado0, "volante_mango_der", 437, 170, 3.8f, -7.1f, -0.8f, 1.2f, 4.6f, 1.6f, 0.0f, -19.5f, 15.5f, 22.0f, 0.0f);
 		ModelPartData body_lado1 = body.addChild("lado_1", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-45), 0));
 		c(body_lado1, "pend_sup_0_1", 1, 264, -14.3939f, 0.0f, -1.8112f, 28.7878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado1, "pend_sup_1_1", 1, 276, -13.6898f, 0.0f, -1.8112f, 27.3795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
@@ -498,8 +498,8 @@ public final class SpaceCruiserModel {
 		c(glow_lado0, "panel_boton_1", 318, 392, -4.8f, -1.9f, 0.4f, 0.9f, 0.4f, 0.5f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
 		c(glow_lado0, "panel_boton_2", 313, 392, 3.8f, -1.9f, 0.4f, 0.9f, 0.4f, 0.5f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
 		c(glow_lado0, "panel_boton_3", 308, 392, 5.2f, -1.9f, 0.4f, 0.9f, 0.4f, 0.5f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
-		c(glow_lado0, "volante_boton_izq", 455, 387, -4.8f, -7.6f, -0.4f, 0.8f, 0.5f, 0.8f, 0.0f, -19.5f, 15.5f, -22.0f, 0.0f);
-		c(glow_lado0, "volante_boton_der", 449, 387, 4.0f, -7.6f, -0.4f, 0.8f, 0.5f, 0.8f, 0.0f, -19.5f, 15.5f, -22.0f, 0.0f);
+		c(glow_lado0, "volante_boton_izq", 455, 387, -4.8f, -7.6f, -0.4f, 0.8f, 0.5f, 0.8f, 0.0f, -19.5f, 15.5f, 22.0f, 0.0f);
+		c(glow_lado0, "volante_boton_der", 449, 387, 4.0f, -7.6f, -0.4f, 0.8f, 0.5f, 0.8f, 0.0f, -19.5f, 15.5f, 22.0f, 0.0f);
 		ModelPartData glow_lado1 = glow.addChild("lado_1", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-45), 0));
 		c(glow_lado1, "franja_borde_1", 281, 336, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado1, "franja_pendiente_1", 284, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);

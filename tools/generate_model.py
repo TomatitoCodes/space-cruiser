@@ -240,7 +240,7 @@ def build():
     for i, (xa, col) in enumerate(((-6.2, "red"), (-4.8, "orange"), (3.8, "cyan"), (5.2, "yellow"))):
         lb("panel_boton_%d" % i, "glow", 0, xa, FLOOR + 5.5, -15.4, xa + 0.9, FLOOR + 5.9, -14.9, col, **sc)
     # volante / mando de vuelo en el centro, inclinado hacia el piloto (pivote en la base)
-    yk = dict(origin=(0, FLOOR + 5.5, -15.5), rot=(-22.0, 0, 0))
+    yk = dict(origin=(0, FLOOR + 5.5, -15.5), rot=(22.0, 0, 0))
     lb("volante_base", "body", 0, -2.2, FLOOR + 5.0, -16.8, 2.2, FLOOR + 6.4, -14.2, "dark")
     lb("volante_columna", "body", 0, -0.9, FLOOR + 5.5, -16.2, 0.9, FLOOR + 11.5, -14.8, "pod", **yk)
     lb("volante_barra", "body", 0, -4.8, FLOOR + 10.5, -16.2, 4.8, FLOOR + 11.7, -14.8, "pod", **yk)
