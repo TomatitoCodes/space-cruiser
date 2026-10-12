@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -31,3 +33,17 @@ jobs:
             build/libs/*.jar
             !build/libs/*-sources.jar
           if-no-files-found: error
+
+      # Solo en main: la release "latest" se rehace con el jar recién compilado, así el enlace
+      # de descarga es siempre el mismo y no hace falta iniciar sesión ni descomprimir nada.
+      - name: Publicar el jar en la release "latest"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          JAR=$(ls build/libs/*.jar | grep -v -- '-sources' | head -n 1)
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest "$JAR" \
+            --title "Última compilación" \
+            --notes "Jar compilado desde el commit ${GITHUB_SHA::7}" \
+            --target "$GITHUB_SHA"
