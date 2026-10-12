@@ -19,6 +19,7 @@ Mod de Minecraft para **Fabric 1.21.1**. Nave pilotable inspirada en la Space Cr
 - [x] Partículas verdes en espiral al cambiar de dimensión, a modo de portal (v2.5)
 - [x] Patas rediseñadas como tren de aterrizaje: anclaje, manguito, pistón cromado, aletas y plato con luces (v2.6)
 - [x] Dos linternas con cinta americana, juntas en el centro del borde de la placa delantera y apuntando adelante (v2.9)
+- [x] Reactor interior 1 px más pequeño y núcleo naranja rediseñado (cápsula con anillos, brillo en degradado, tubos y válvulas) (v2.10)
 - [ ] Sonidos propios para el viaje (ahora usa el sonido de teletransporte del Enderman como provisional)
 - Todo el arte y los sonidos serán originales, sin copiar los de la serie
 

@@ -40,6 +40,8 @@ COLORS = {
     "seat": (112, 78, 52),
     "glass": (160, 207, 235),
     "lamp": (255, 243, 200),
+    "amber": (225, 100, 20),
+    "hot": (255, 240, 170),
     "lamp_body": (96, 100, 52),
     "lamp_dark": (68, 72, 38),
     "tape": (136, 140, 146),
@@ -316,16 +318,27 @@ def build():
     for i, (xa, col) in enumerate(((-4.4, "red"), (-3.2, "orange"), (2.6, "cyan"), (3.8, "yellow"))):
         lb("mapa_boton_%d" % i, "glow", k, xa, FLOOR + 5.5, -14.9, xa + 0.8, FLOOR + 5.9, -14.5, col, **mp)
 
-    # --- Reactor central (pared trasera, lado 4): núcleo brillante entre aletas
-    lb("reactor_base", "body", 4, -6, FLOOR, -18.4, 6, FLOOR + 3, -13.5, "dark")
-    lb("reactor_peana", "body", 4, -4.5, FLOOR + 3, -17.6, 4.5, FLOOR + 4, -14.4, "pod")
-    lb("reactor_nucleo", "glow", 4, -2, FLOOR + 4, -16.6, 2, FLOOR + 12, -14.6, "orange")
-    lb("reactor_corazon", "glow", 4, -1, FLOOR + 5, -16.1, 1, FLOOR + 11, -15.1, "yellow")
-    lb("reactor_tapa", "body", 4, -4, FLOOR + 12, -17.2, 4, FLOOR + 13, -14.2, "pod")
+    # --- Reactor central (pared trasera, lado 4): 1 px más pequeño; núcleo en cápsula con anillos y brillo en degradado
+    lb("reactor_base", "body", 4, -5, FLOOR, -18.4, 5, FLOOR + 2.5, -14.0, "dark")
+    lb("reactor_peana", "body", 4, -3.8, FLOOR + 2.5, -17.6, 3.8, FLOOR + 3.4, -14.9, "pod")
+    lb("reactor_aro_inf", "body", 4, -2.7, FLOOR + 3.4, -17.0, 2.7, FLOOR + 4.0, -15.2, "chrome")
+    # cápsula: cuatro tramos de brillo creciente hacia el centro, separados por anillos oscuros
+    segs = ((4.0, 5.6, "amber"), (5.9, 7.7, "orange"), (8.0, 9.6, "yellow"), (9.9, 10.5, "orange"))
+    for j, (y0, y1, sl) in enumerate(segs):
+        lb("reactor_nucleo_%d" % j, "glow", 4, -1.9, FLOOR + y0, -16.6, 1.9, FLOOR + y1, -14.8, sl)
+    lb("reactor_corazon", "glow", 4, -0.8, FLOOR + 5.0, -16.9, 0.8, FLOOR + 9.6, -14.6, "hot")
+    for j, y in enumerate((5.6, 7.7, 9.6)):
+        lb("reactor_anillo_%d" % j, "body", 4, -2.3, FLOOR + y, -16.9, 2.3, FLOOR + y + 0.35, -14.6, "pod")
+    lb("reactor_tapa", "body", 4, -3.0, FLOOR + 10.5, -17.2, 3.0, FLOOR + 11.5, -14.6, "pod")
+    lb("reactor_tapa_luz", "glow", 4, -1.0, FLOOR + 11.5, -16.4, 1.0, FLOOR + 11.8, -15.4, "red")
     for sgn in (-1, 1):
-        xa, xb = (-5.5, -4.5) if sgn < 0 else (4.5, 5.5)
-        lb("reactor_aleta_%d" % sgn, "body", 4, xa, FLOOR + 3, -17.8, xb, FLOOR + 11, -15.0, "dark")
-        lb("reactor_luz_%d" % sgn, "glow", 4, xa, FLOOR + 5, -15.0, xb, FLOOR + 9, -14.6, "cyan")
+        xa, xb = (-4.8, -3.8) if sgn < 0 else (3.8, 4.8)
+        lb("reactor_aleta_%d" % sgn, "body", 4, xa, FLOOR + 2.5, -17.8, xb, FLOOR + 10.0, -15.0, "dark")
+        lb("reactor_luz_%d" % sgn, "glow", 4, xa, FLOOR + 4.5, -15.0, xb, FLOOR + 8.5, -14.6, "cyan")
+        # tubos de refrigeración hacia la pared y válvula amarilla
+        lb("reactor_tubo_%d" % sgn, "body", 4, xa - 0.2 * sgn, FLOOR + 10.0, -18.2, xb + 0.2 * sgn, FLOOR + 10.8, -16.2, "chrome")
+        lb("reactor_valvula_%d" % sgn, "glow", 4, (xa + xb) / 2 - 0.4, FLOOR + 10.8, -17.4, (xa + xb) / 2 + 0.4, FLOOR + 11.2, -16.6, "yellow")
+        lb("reactor_piloto_%d" % sgn, "glow", 4, (xa + xb) / 2 - 0.5, FLOOR + 1.0, -14.4, (xa + xb) / 2 + 0.5, FLOOR + 1.8, -14.0, "orange")
 
     # --- Módulos laterales (lados 2 y 6): terminales bajos con tira de luz y botones
     for k in (2, 6):
