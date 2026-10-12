@@ -55,7 +55,10 @@ public class SpaceCruiserEntity extends Entity {
 	private static final double VERTICAL_ACCELERATION = 0.04;
 	private static final double HORIZONTAL_DRAG = 0.92;
 	private static final double VERTICAL_DRAG = 0.88;
-	private static final float TURN_SPEED = 10.0f;
+	/** Giro máximo con A/D, en grados por tick. */
+	private static final float TURN_SPEED = 3.5f;
+
+	private float turnVelocity;
 
 	// Inclinación visual (solo cliente), la lee el renderer.
 	public float leanPitch;
@@ -186,6 +189,16 @@ public class SpaceCruiserEntity extends Entity {
 		return new ItemStack(this.item.get());
 	}
 
+	/** El piloto puede mirar 90 grados a cada lado de la proa (180 en total) sin que la nave gire. */
+	@Override
+	public void onPassengerLookAround(Entity passenger) {
+		float relative = MathHelper.wrapDegrees(passenger.getYaw() - this.getYaw());
+		float clamped = MathHelper.clamp(relative, -90.0f, 90.0f);
+		passenger.prevYaw += clamped - relative;
+		passenger.setYaw(passenger.getYaw() + clamped - relative);
+		passenger.setHeadYaw(passenger.getYaw());
+	}
+
 	/** Volar bajo no debe hacer daño por caída ni a la nave ni al piloto. */
 	@Override
 	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
@@ -260,18 +273,24 @@ public class SpaceCruiserEntity extends Entity {
 		double vz = velocity.z;
 
 		if (pilot != null) {
-			// La nave gira suavemente hacia donde mira el piloto.
-			float diff = MathHelper.wrapDegrees(pilot.getYaw() - this.getYaw());
-			this.setYaw(this.getYaw() + MathHelper.clamp(diff, -TURN_SPEED, TURN_SPEED));
-
+			// A/D giran la nave (la mirada del piloto queda libre para mirar por la cabina). El piloto gira con la
+			// cabina, así que lo que ve no cambia al virar.
 			double forward = pilot.forwardSpeed;
 			double side = pilot.sidewaysSpeed; // positivo = izquierda
+			float targetTurn = (float) (-side * TURN_SPEED);
+			this.turnVelocity += (targetTurn - this.turnVelocity) * 0.3f;
+			if (Math.abs(this.turnVelocity) > 0.01f) {
+				this.setYaw(this.getYaw() + this.turnVelocity);
+				pilot.setYaw(pilot.getYaw() + this.turnVelocity);
+				pilot.prevYaw += this.turnVelocity;
+			}
+
 			double yawRad = Math.toRadians(this.getYaw());
 			double sin = Math.sin(yawRad);
 			double cos = Math.cos(yawRad);
 
-			vx += (-sin * forward + cos * side) * ACCELERATION;
-			vz += (cos * forward + sin * side) * ACCELERATION;
+			vx += -sin * forward * ACCELERATION;
+			vz += cos * forward * ACCELERATION;
 			if (ascendInput.getAsBoolean()) {
 				vy += VERTICAL_ACCELERATION;
 			}

@@ -61,13 +61,7 @@ public class SpaceCruiserClient implements ClientModInitializer {
 		};
 
 		// Cámara de cabina: al subir a la nave se pasa a primera persona (desde dentro se alcanza la consola)
-		// y al bajar se recupera la que tenías. La tecla V alterna entre cabina y exterior.
-		KeyBinding cameraKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key.spacecruiser.camera",
-				InputUtil.Type.KEYSYM,
-				GLFW.GLFW_KEY_V,
-				"key.categories.movement"
-		));
+		// y al bajar se recupera la que tenías.
 		final Perspective[] saved = {null};
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			boolean riding = mc.player != null && mc.player.getVehicle() instanceof SpaceCruiserEntity;
@@ -77,12 +71,6 @@ public class SpaceCruiserClient implements ClientModInitializer {
 			} else if (!riding && saved[0] != null) {
 				mc.options.setPerspective(saved[0]);
 				saved[0] = null;
-			}
-			while (cameraKey.wasPressed()) {
-				if (riding) {
-					mc.options.setPerspective(mc.options.getPerspective().isFirstPerson()
-							? Perspective.THIRD_PERSON_BACK : Perspective.FIRST_PERSON);
-				}
 			}
 		});
 
