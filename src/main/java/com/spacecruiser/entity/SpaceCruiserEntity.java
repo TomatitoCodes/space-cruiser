@@ -1,6 +1,7 @@
 package com.spacecruiser.entity;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -13,6 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -81,6 +83,35 @@ public class SpaceCruiserEntity extends Entity {
 			return living;
 		}
 		return super.getControllingPassenger();
+	}
+
+	/**
+	 * Al bajarse, el jugador aparece junto a la nave (a su lado, sin chocar con nada) en vez de
+	 * donde decida el valor por defecto de vanilla, que lo manda encima de la caja de colisión y
+	 * hacía que saltara a un sitio raro y volviera.
+	 */
+	@Override
+	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
+		double distance = this.getWidth() / 2.0 + passenger.getWidth() / 2.0 + 0.6;
+		double yawRad = Math.toRadians(this.getYaw());
+		double sin = Math.sin(yawRad);
+		double cos = Math.cos(yawRad);
+		// Direcciones respecto a la nave: derecha, izquierda, atrás, delante y diagonales.
+		double[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-0.7, -0.7}, {0.7, -0.7}, {-0.7, 0.7}, {0.7, 0.7}};
+		for (double[] d : dirs) {
+			double side = d[0] * distance;
+			double front = d[1] * distance;
+			double x = this.getX() + cos * side - sin * front;
+			double z = this.getZ() + sin * side + cos * front;
+			for (double dy : new double[]{0.0, 1.0, -1.0}) {
+				Vec3d target = new Vec3d(x, this.getY() + dy, z);
+				Box box = passenger.getBoundingBox(EntityPose.STANDING).offset(target.subtract(passenger.getPos()));
+				if (this.getWorld().isSpaceEmpty(passenger, box)) {
+					return target;
+				}
+			}
+		}
+		return new Vec3d(this.getX(), this.getBoundingBox().maxY, this.getZ());
 	}
 
 	@Override
