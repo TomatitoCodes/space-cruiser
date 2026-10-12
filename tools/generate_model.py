@@ -40,6 +40,7 @@ COLORS = {
     "seat": (112, 78, 52),
     "glass": (160, 207, 235),
     "potion": (70, 225, 95),
+    "potion2": (45, 190, 80),
     "cork": (150, 108, 68),
     "cyan": (110, 230, 255),
     "red": (255, 90, 70),
@@ -265,11 +266,18 @@ def build():
         add("bat_%d" % i, "bateria", (xa, FLOOR + 1.5, -14.1), (xa + 0.9, FLOOR + 2.5, -13.8), "orange")
 
     # --- Guiño: botella de cristal con líquido verde en el suelo, junto al reposabrazos derecho (decorativa)
-    BX, BZ = 7.3, -9.0
-    add("botella_liquido", "glow", (BX + 0.5, FLOOR + 0.6, BZ + 0.5), (BX + 2.5, FLOOR + 3.6, BZ + 2.5), "potion")
-    add("botella_corcho", "body", (BX + 0.7, FLOOR + 7.3, BZ + 0.7), (BX + 2.3, FLOOR + 8.3, BZ + 2.3), "cork")
-    add("botella_cuerpo", "botella", (BX, FLOOR + 0.3, BZ), (BX + 3, FLOOR + 4.8, BZ + 3), "glass")
-    add("botella_cuello", "botella", (BX + 0.6, FLOOR + 4.8, BZ + 0.6), (BX + 2.4, FLOOR + 7.4, BZ + 2.4), "glass")
+    # Tumbada, pequeña, con el alcohol desparramado por el suelo. Cuello hacia el centro de la cabina.
+    F0 = FLOOR + 0.3
+    add("botella_liquido", "glow", (8.2, F0 + 0.2, -8.7), (11.5, F0 + 1.2, -6.9), "potion")
+    add("botella_cuerpo", "botella", (7.3, F0, -9.0), (11.8, F0 + 2.4, -6.6), "glass")
+    add("botella_cuello", "botella", (4.9, F0 + 0.6, -8.4), (7.3, F0 + 1.8, -7.2), "glass")
+    add("botella_corcho", "body", (4.1, F0 + 0.6, -8.4), (4.9, F0 + 1.8, -7.2), "cork")
+    # charco irregular (brillo máximo, dos tonos)
+    for n, (x0, x1, z0, z1, sl) in enumerate((
+            (2.6, 4.1, -9.6, -6.0, "potion"), (1.4, 2.6, -8.8, -6.6, "potion2"),
+            (3.4, 5.4, -6.0, -4.9, "potion2"), (4.1, 6.4, -10.1, -8.4, "potion2"),
+            (0.5, 1.4, -8.0, -7.0, "potion"), (5.4, 7.0, -7.2, -6.0, "potion"))):
+        add("charco_%d" % n, "glow", (x0, F0, z0), (x1, F0 + 0.12 + 0.01 * n, z1), sl)
 
     # --- GPS: consola a la izquierda del piloto (lado 1, delante-izquierda), mismo perfil que las otras consolas
     k = 1
