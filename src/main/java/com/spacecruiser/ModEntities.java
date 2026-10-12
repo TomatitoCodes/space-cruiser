@@ -12,10 +12,12 @@ import java.util.function.Supplier;
 
 public final class ModEntities {
 	/**
-	 * Escala de la nave. 16 píxeles = 1 bloque; 14/16 es la versión "2 px menos" que se quedó como definitiva.
-	 * Para probar otro tamaño basta con cambiar este número.
+	 * Escalas de la nave. 16 píxeles = 1 bloque. La nave actual es 14/16; las variantes quitan 1 y 2 píxeles más
+	 * (13/16 y 12/16). Para probar otro tamaño basta con cambiar estos números.
 	 */
 	public static final float SCALE = 14.0f / 16.0f;
+	public static final float SCALE_MINUS_1 = 13.0f / 16.0f;
+	public static final float SCALE_MINUS_2 = 12.0f / 16.0f;
 
 	/** Medidas de la nave a escala 1: caja de colisión y altura a la que va el piloto. */
 	private static final float WIDTH = 4.6f;
@@ -24,6 +26,10 @@ public final class ModEntities {
 
 	public static final EntityType<SpaceCruiserEntity> SPACE_CRUISER =
 			register("space_cruiser", SCALE, () -> ModItems.SPACE_CRUISER);
+	public static final EntityType<SpaceCruiserEntity> SPACE_CRUISER_MINUS_1 =
+			register("space_cruiser_minus1", SCALE_MINUS_1, () -> ModItems.SPACE_CRUISER_MINUS_1);
+	public static final EntityType<SpaceCruiserEntity> SPACE_CRUISER_MINUS_2 =
+			register("space_cruiser_minus2", SCALE_MINUS_2, () -> ModItems.SPACE_CRUISER_MINUS_2);
 
 	private ModEntities() {
 	}

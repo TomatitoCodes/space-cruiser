@@ -10,7 +10,8 @@ Mod de Minecraft para **Fabric 1.21.1**. Nave pilotable inspirada en la Space Cr
 - [x] Al bajarse, el jugador aparece junto a la nave
 - [x] GPS del cockpit y nuevo interior (v1.7)
 - [x] Cámara de cabina y clic derecho sobre la pantalla del GPS (v1.8)
-- [x] Mirada libre de 180° en la cabina, A/D para girar y GPS con mapa del terreno (v1.9)
+- [x] Mirada libre de 180° en la cabina, A/D para girar solo en primera persona y GPS con mapa del terreno (v1.9)
+- [x] Tres tamaños en el mismo jar: actual (14/16), -1 px (13/16) y -2 px (12/16) (v2.0)
 
 ## Visión
 
@@ -77,7 +78,7 @@ Un "navegador GPS" con pantalla dentro de la nave. En primera persona, al intera
 - [x] Cámara en primera persona dentro del cockpit, necesaria para usar el GPS: se activa sola al subir y se recupera la anterior al bajar
 - [x] Cámara exterior: la de tercera persona de siempre (F5); sin ajustes propios todavía
 - [x] La mirada del piloto es libre 90° a cada lado de la proa (180° en total) sin girar la nave
-- [x] Controles de vuelo: W/S avanzar y frenar, A/D girar la nave, Espacio sube y Ctrl baja
+- [x] Controles de vuelo: W/S avanzar y frenar, A/D girar la nave (solo en primera persona; en tercera, como antes: la nave sigue la mirada y A/D desplazan de lado), Espacio sube y Ctrl baja
 - [ ] Velocidad máxima, inercia y giro
 - [ ] Mejorar la experiencia de manejo en general (se concretará probando la nave)
 

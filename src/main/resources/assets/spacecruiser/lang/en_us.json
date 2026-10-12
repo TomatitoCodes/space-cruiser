@@ -29,5 +29,9 @@
   "gui.spacecruiser.gps.dir.w": "W",
   "gui.spacecruiser.gps.dir.nw": "NW",
   "hud.spacecruiser.gps_hint": "Right click: open GPS",
-  "gui.spacecruiser.gps.map": "Map"
+  "gui.spacecruiser.gps.map": "Map",
+  "item.spacecruiser.space_cruiser_minus1": "Space Cruiser (-1 px)",
+  "entity.spacecruiser.space_cruiser_minus1": "Space Cruiser (-1 px)",
+  "item.spacecruiser.space_cruiser_minus2": "Space Cruiser (-2 px)",
+  "entity.spacecruiser.space_cruiser_minus2": "Space Cruiser (-2 px)"
 }

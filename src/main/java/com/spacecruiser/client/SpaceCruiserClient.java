@@ -27,6 +27,10 @@ public class SpaceCruiserClient implements ClientModInitializer {
 		EntityModelLayerRegistry.registerModelLayer(MODEL_LAYER, SpaceCruiserModel::getTexturedModelData);
 		EntityRendererRegistry.register(ModEntities.SPACE_CRUISER,
 				ctx -> new SpaceCruiserRenderer(ctx, ModEntities.SCALE));
+		EntityRendererRegistry.register(ModEntities.SPACE_CRUISER_MINUS_1,
+				ctx -> new SpaceCruiserRenderer(ctx, ModEntities.SCALE_MINUS_1));
+		EntityRendererRegistry.register(ModEntities.SPACE_CRUISER_MINUS_2,
+				ctx -> new SpaceCruiserRenderer(ctx, ModEntities.SCALE_MINUS_2));
 
 		KeyBinding descendKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 				"key.spacecruiser.descend",
@@ -85,5 +89,6 @@ public class SpaceCruiserClient implements ClientModInitializer {
 		});
 		SpaceCruiserEntity.ascendInput = () -> client.options.jumpKey.isPressed();
 		SpaceCruiserEntity.descendInput = descendKey::isPressed;
+		SpaceCruiserEntity.cockpitView = () -> client.options.getPerspective().isFirstPerson();
 	}
 }

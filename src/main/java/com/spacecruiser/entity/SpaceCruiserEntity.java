@@ -37,6 +37,8 @@ public class SpaceCruiserEntity extends Entity {
 	// Los rellena el cliente (SpaceCruiserClient); en el servidor se quedan a false.
 	public static BooleanSupplier ascendInput = () -> false;
 	public static BooleanSupplier descendInput = () -> false;
+	/** Lo rellena el cliente: true si el piloto va en primera persona (vista de cabina). */
+	public static BooleanSupplier cockpitView = () -> false;
 
 	/** Lo rellena el cliente: abre el GPS cuando el piloto hace clic mirando a la pantalla. */
 	public static BiConsumer<SpaceCruiserEntity, PlayerEntity> gpsClick = (ship, player) -> {
@@ -55,8 +57,10 @@ public class SpaceCruiserEntity extends Entity {
 	private static final double VERTICAL_ACCELERATION = 0.04;
 	private static final double HORIZONTAL_DRAG = 0.92;
 	private static final double VERTICAL_DRAG = 0.88;
-	/** Giro máximo con A/D, en grados por tick. */
+	/** Giro máximo con A/D en vista de cabina, en grados por tick. */
 	private static final float TURN_SPEED = 3.5f;
+	/** Giro máximo hacia donde mira el piloto en tercera persona, en grados por tick. */
+	private static final float FOLLOW_TURN_SPEED = 10.0f;
 
 	private float turnVelocity;
 
@@ -189,9 +193,12 @@ public class SpaceCruiserEntity extends Entity {
 		return new ItemStack(this.item.get());
 	}
 
-	/** El piloto puede mirar 90 grados a cada lado de la proa (180 en total) sin que la nave gire. */
+	/** En vista de cabina el piloto puede mirar 90 grados a cada lado de la proa (180 en total) sin que la nave gire. */
 	@Override
 	public void onPassengerLookAround(Entity passenger) {
+		if (!cockpitView.getAsBoolean()) {
+			return;
+		}
 		float relative = MathHelper.wrapDegrees(passenger.getYaw() - this.getYaw());
 		float clamped = MathHelper.clamp(relative, -90.0f, 90.0f);
 		passenger.prevYaw += clamped - relative;
@@ -273,24 +280,36 @@ public class SpaceCruiserEntity extends Entity {
 		double vz = velocity.z;
 
 		if (pilot != null) {
-			// A/D giran la nave (la mirada del piloto queda libre para mirar por la cabina). El piloto gira con la
-			// cabina, así que lo que ve no cambia al virar.
 			double forward = pilot.forwardSpeed;
 			double side = pilot.sidewaysSpeed; // positivo = izquierda
-			float targetTurn = (float) (-side * TURN_SPEED);
-			this.turnVelocity += (targetTurn - this.turnVelocity) * 0.3f;
-			if (Math.abs(this.turnVelocity) > 0.01f) {
-				this.setYaw(this.getYaw() + this.turnVelocity);
-				pilot.setYaw(pilot.getYaw() + this.turnVelocity);
-				pilot.prevYaw += this.turnVelocity;
+			double sin;
+			double cos;
+			if (cockpitView.getAsBoolean()) {
+				// Vista de cabina: A/D giran la nave y la mirada del piloto queda libre; el piloto gira con la cabina,
+				// así que lo que ve no cambia al virar.
+				float targetTurn = (float) (-side * TURN_SPEED);
+				this.turnVelocity += (targetTurn - this.turnVelocity) * 0.3f;
+				if (Math.abs(this.turnVelocity) > 0.01f) {
+					this.setYaw(this.getYaw() + this.turnVelocity);
+					pilot.setYaw(pilot.getYaw() + this.turnVelocity);
+					pilot.prevYaw += this.turnVelocity;
+				}
+				double yawRad = Math.toRadians(this.getYaw());
+				sin = Math.sin(yawRad);
+				cos = Math.cos(yawRad);
+				vx += -sin * forward * ACCELERATION;
+				vz += cos * forward * ACCELERATION;
+			} else {
+				// Tercera persona (como siempre): la nave gira suavemente hacia donde mira el piloto y A/D desplazan de lado.
+				this.turnVelocity = 0.0f;
+				float diff = MathHelper.wrapDegrees(pilot.getYaw() - this.getYaw());
+				this.setYaw(this.getYaw() + MathHelper.clamp(diff, -FOLLOW_TURN_SPEED, FOLLOW_TURN_SPEED));
+				double yawRad = Math.toRadians(this.getYaw());
+				sin = Math.sin(yawRad);
+				cos = Math.cos(yawRad);
+				vx += (-sin * forward + cos * side) * ACCELERATION;
+				vz += (cos * forward + sin * side) * ACCELERATION;
 			}
-
-			double yawRad = Math.toRadians(this.getYaw());
-			double sin = Math.sin(yawRad);
-			double cos = Math.cos(yawRad);
-
-			vx += -sin * forward * ACCELERATION;
-			vz += cos * forward * ACCELERATION;
 			if (ascendInput.getAsBoolean()) {
 				vy += VERTICAL_ACCELERATION;
 			}
