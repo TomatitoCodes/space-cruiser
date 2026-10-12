@@ -26,6 +26,7 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 	private final ModelPart glow;
 	private final ModelPart frame;
 	private final ModelPart dome;
+	private final ModelPart battery;
 
 	public SpaceCruiserRenderer(EntityRendererFactory.Context context, float scale) {
 		super(context);
@@ -34,6 +35,7 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 		this.glow = root.getChild("glow");
 		this.frame = root.getChild("frame");
 		this.dome = root.getChild("dome");
+		this.battery = root.getChild("bateria");
 		this.shadowRadius = 2.3f * scale;
 	}
 
@@ -79,6 +81,13 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 
 		// Luces: siempre a brillo máximo, como si emitieran luz.
 		glow.render(matrices, solid, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+
+		// Batería del reactor: se encienden tantos pilotos como carga quede (redondeando hacia arriba).
+		int lit = (int) Math.ceil(entity.getBattery() - 0.001f);
+		for (int i = 0; i < 10; i++) {
+			battery.getChild("bat_" + i).visible = i < lit;
+		}
+		battery.render(matrices, solid, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 
 		if (!hideDome) {
 			frame.render(matrices, solid, light, OverlayTexture.DEFAULT_UV);

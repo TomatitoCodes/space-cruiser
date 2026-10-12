@@ -176,33 +176,98 @@ def build():
     # piloto de luz embutido en el techo
     add("baliza", "glow", (-2, PROFILE[-1][1], -2), (2, PROFILE[-1][1] + 0.3, 2), "yellow")
 
-    # --- Cabina: todo bajo y pegado a las paredes; el jugador (cadera a 16 px) queda libre y a la vista.
-    # Nariz de la nave = -Z. Las piernas del piloto llegan hasta ~z=-11, así que la consola va más allá.
+    # --- Cabina. Nariz de la nave = -Z. Todo es bajo o va pegado a las paredes: el piloto (cadera a 16 px)
+    #     queda libre y a la vista. Los módulos de pared se definen en el marco de cada "lado" (pared en z=-18,5).
+    def lb(name, group, k, x0, y0, z0, x1, y1, z1, slot, origin=None, rot=None):
+        o = origin if origin else (0.0, 0.0, 0.0)
+        r = rot if rot else (0.0, 0.0, 0.0)
+        add(name, group, (x0, y0, z0), (x1, y1, z1), slot, lado=k, origin=o, rot=r)
+
+    WALL = -SILL_IN + 0.1   # cara interior de la pared (un pelo dentro para no solapar caras)
+
+    # Suelo: placa octogonal oscura sobre el fondo y tiras de luz
+    octagon("suelo_placa", 15.0, FLOOR, FLOOR + 0.3, "body", "pod")
+    for n, s_ in (("izq", -1), ("der", 1)):
+        add("suelo_luz_%s" % n, "glow", ((-13.5 if s_ < 0 else 12.5), FLOOR + 0.3, -9), ((-12.5 if s_ < 0 else 13.5), FLOOR + 0.7, 9), "cyan")
+
+    # Asiento del piloto: base, respaldo, reposacabezas, refuerzos laterales y reposabrazos
     add("asiento_base", "body", (-5, FLOOR, -2), (5, FLOOR + 2, 4), "seat")
+    add("asiento_refuerzo_izq", "body", (-6.5, FLOOR, -1.5), (-5, FLOOR + 5, 4), "seat")
+    add("asiento_refuerzo_der", "body", (5, FLOOR, -1.5), (6.5, FLOOR + 5, 4), "seat")
     add("respaldo", "body", (-5, FLOOR + 2, 3.5), (5, FLOOR + 13, 5.5), "seat")
+    add("respaldo_ala_izq", "body", (-6.5, FLOOR + 2, 2.5), (-5, FLOOR + 11, 5.5), "seat")
+    add("respaldo_ala_der", "body", (5, FLOOR + 2, 2.5), (6.5, FLOOR + 11, 5.5), "seat")
     add("reposacabezas", "body", (-3.5, FLOOR + 13, 3.5), (3.5, FLOOR + 17, 5.5), "seat")
     add("respaldo_luz", "glow", (-1.5, FLOOR + 6, 3.2), (1.5, FLOOR + 11, 3.5), "cyan")
+    add("pedestal_asiento", "body", (-3, FLOOR + 0.3, 0), (3, FLOOR + 1, 6), "dark")
     for n, s_ in (("izq", -1), ("der", 1)):
         x0, x1 = (-11.0, -9.5) if s_ < 0 else (9.5, 11.0)
         add("reposabrazos_%s" % n, "body", (x0, FLOOR, -4), (x1, FLOOR + 4.5, 4), "dark")
         add("reposabrazos_tapa_%s" % n, "body", (x0 - 0.5, FLOOR + 4.5, -4), (x1 + 0.5, FLOOR + 5.5, 4), "pod")
         add("boton_%s" % n, "glow", (x0 + 0.2, FLOOR + 5.5, -3), (x1 - 0.2, FLOOR + 6, -1.5), "red" if s_ < 0 else "cyan")
-        # placa de suelo y tira de luz junto a la pared
-        add("suelo_luz_%s" % n, "glow", ((-13.5 if s_ < 0 else 12.5), FLOOR, -8), ((-12.5 if s_ < 0 else 13.5), FLOOR + 0.4, 8), "cyan")
-    add("suelo_placa", "body", (-10, FLOOR, -9), (10, FLOOR + 0.3, 2), "pod")
-    # consola delantera: bloque bajo con pantallas inclinadas en la cara que mira al piloto
-    add("consola_base", "body", (-9, FLOOR, -17.5), (9, FLOOR + 3, -13.5), "dark")
-    add("consola_tapa", "body", (-9.5, FLOOR + 3, -17.8), (9.5, FLOOR + 4, -13.2), "pod")
-    add("consola_panel", "body", (-8, FLOOR + 4, -17.5), (8, FLOOR + 6.5, -15), "dark",
-        origin=(0, FLOOR + 4, -15), rot=(20, 0, 0))
-    add("pantalla_izq", "glow", (-7, FLOOR + 6.5, -17.2), (-2.5, FLOOR + 7.0, -15.2), "cyan",
-        origin=(0, FLOOR + 4, -15), rot=(20, 0, 0))
-    add("pantalla_cen", "glow", (-1.8, FLOOR + 6.5, -17.2), (1.8, FLOOR + 7.0, -15.2), "yellow",
-        origin=(0, FLOOR + 4, -15), rot=(20, 0, 0))
-    add("pantalla_der", "glow", (2.5, FLOOR + 6.5, -17.2), (7, FLOOR + 7.0, -15.2), "cyan",
-        origin=(0, FLOOR + 4, -15), rot=(20, 0, 0))
-    add("boton_consola_1", "glow", (-6, FLOOR + 3.2, -14.3), (-4.5, FLOOR + 3.8, -13.7), "red")
-    add("boton_consola_2", "glow", (4.5, FLOOR + 3.2, -14.3), (6, FLOOR + 3.8, -13.7), "orange")
+        add("boton2_%s" % n, "glow", (x0 + 0.2, FLOOR + 5.5, 0), (x1 - 0.2, FLOOR + 6, 1.5), "yellow")
+
+    # Pilares de pared en cada arista (marcan los módulos y sujetan el cristal)
+    rp = (SILL_IN - 0.9) / math.cos(math.pi / 8)
+    for k in range(8):
+        th = (22.5 + 45 * k) / D
+        x, z = rp * math.sin(th), -rp * math.cos(th)
+        add("pilar_%d" % k, "body", (x - 0.7, FLOOR, z - 0.7), (x + 0.7, SILL_TOP, z + 0.7), "dark")
+
+    # --- Consola principal (pared del morro, lado 0): panel inclinado con la pantalla del GPS
+    PAN = 25.0
+    for k, w in ((0, 7.0), (1, 5.0), (7, 5.0)):
+        e = 0.01 * k
+        lb("consola_base_a_%d" % k, "body", k, -w, FLOOR, -16.0, w, FLOOR + 4.3 + e, -14.5, "dark")
+        lb("consola_base_b_%d" % k, "body", k, -w, FLOOR, -17.2, w, FLOOR + 4.9 + e, -16.0, "dark")
+        lb("consola_base_c_%d" % k, "body", k, -w, FLOOR, WALL - 0.1, w, FLOOR + 5.4 + e, -17.2, "dark")
+        lb("consola_panel_%d" % k, "body", k, -w, FLOOR + 4, -18.4, w, FLOOR + 5.5, -14.5, "pod",
+           origin=(0, FLOOR + 4, -14.5), rot=(PAN, 0, 0))
+        lb("consola_labio_%d" % k, "body", k, -w - 0.3, FLOOR + 4.3, -14.8, w + 0.3, FLOOR + 5.0, -14.3, "dark")
+    # pantalla grande del GPS con retícula y punto de posición
+    sc = dict(origin=(0, FLOOR + 4, -14.5), rot=(PAN, 0, 0))
+    lb("gps_pantalla", "glow", 0, -5.5, FLOOR + 5.5, -17.4, 5.5, FLOOR + 5.9, -15.6, "cyan", **sc)
+    lb("gps_linea_h", "glow", 0, -5.0, FLOOR + 5.9, -16.6, 5.0, FLOOR + 6.1, -16.4, "dark", **sc)
+    lb("gps_linea_v", "glow", 0, -0.1, FLOOR + 5.9, -17.2, 0.1, FLOOR + 6.1, -15.8, "dark", **sc)
+    lb("gps_punto", "glow", 0, -0.6, FLOOR + 5.9, -16.9, 0.6, FLOOR + 6.3, -16.1, "orange", **sc)
+    for i, (xa, col) in enumerate(((-6.2, "red"), (-4.8, "orange"), (3.8, "cyan"), (5.2, "yellow"))):
+        lb("gps_boton_%d" % i, "glow", 0, xa, FLOOR + 5.5, -15.4, xa + 0.9, FLOOR + 5.9, -14.9, col, **sc)
+    # pantallas laterales: radar (lado 1) y estado de sistemas (lado 7)
+    lb("radar_pantalla", "glow", 1, -3.8, FLOOR + 5.5, -17.4, 3.8, FLOOR + 5.9, -15.6, "cyan", **sc)
+    lb("radar_anillo", "glow", 1, -1.6, FLOOR + 5.9, -17.0, 1.6, FLOOR + 6.1, -16.0, "dark", **sc)
+    lb("radar_punto", "glow", 1, -0.4, FLOOR + 5.9, -16.7, 0.4, FLOOR + 6.3, -16.3, "yellow", **sc)
+    for i, (xa, hgt, col) in enumerate(((-3.6, 0.6, "cyan"), (-1.6, 0.9, "orange"), (0.4, 0.5, "red"), (2.4, 0.8, "cyan"))):
+        lb("estado_barra_%d" % i, "glow", 7, xa, FLOOR + 5.5, -17.4, xa + 1.2, FLOOR + 5.5 + hgt, -15.6, col, **sc)
+    # batería: marco oscuro y 10 pilotos a lo ancho de la cara frontal de la consola (se encienden según la carga)
+    add("bateria_marco", "body", (-6.3, FLOOR + 0.8, -14.5), (6.3, FLOOR + 3.2, -14.1), "pod")
+    for i in range(10):
+        xa = -5.5 + i * 1.1
+        add("bat_%d" % i, "bateria", (xa, FLOOR + 1.5, -14.1), (xa + 0.9, FLOOR + 2.5, -13.8), "orange")
+
+    # --- Reactor central (pared trasera, lado 4): núcleo brillante entre aletas
+    lb("reactor_base", "body", 4, -6, FLOOR, -18.4, 6, FLOOR + 3, -13.5, "dark")
+    lb("reactor_peana", "body", 4, -4.5, FLOOR + 3, -17.6, 4.5, FLOOR + 4, -14.4, "pod")
+    lb("reactor_nucleo", "glow", 4, -2, FLOOR + 4, -16.6, 2, FLOOR + 12, -14.6, "orange")
+    lb("reactor_corazon", "glow", 4, -1, FLOOR + 5, -16.1, 1, FLOOR + 11, -15.1, "yellow")
+    lb("reactor_tapa", "body", 4, -4, FLOOR + 12, -17.2, 4, FLOOR + 13, -14.2, "pod")
+    for sgn in (-1, 1):
+        xa, xb = (-5.5, -4.5) if sgn < 0 else (4.5, 5.5)
+        lb("reactor_aleta_%d" % sgn, "body", 4, xa, FLOOR + 3, -17.8, xb, FLOOR + 11, -15.0, "dark")
+        lb("reactor_luz_%d" % sgn, "glow", 4, xa, FLOOR + 5, -15.0, xb, FLOOR + 9, -14.6, "cyan")
+
+    # --- Módulos laterales (lados 2 y 6): terminales bajos con tira de luz y botones
+    for k in (2, 6):
+        lb("terminal_base_%d" % k, "body", k, -6, FLOOR, WALL - 0.1, 6, FLOOR + 6, -16.0, "dark")
+        lb("terminal_tapa_%d" % k, "body", k, -6.4, FLOOR + 6, WALL - 0.2, 6.4, FLOOR + 7, -15.6, "pod")
+        lb("terminal_luz_%d" % k, "glow", k, -5, FLOOR + 3, -16.0, 5, FLOOR + 3.6, -15.7, "cyan")
+        for i, col in enumerate(("red", "orange", "cyan")):
+            lb("terminal_boton_%d_%d" % (k, i), "glow", k, -3.5 + i * 2.6, FLOOR + 7, -17.4, -2.5 + i * 2.6, FLOOR + 7.4, -16.6, col)
+
+    # --- Taquillas (lados 3 y 5): puertas con tirador
+    for k in (3, 5):
+        lb("taquilla_%d" % k, "body", k, -5.5, FLOOR, WALL - 0.1, 5.5, FLOOR + 8, -15.5, "dark")
+        lb("taquilla_puerta_%d" % k, "body", k, -4.5, FLOOR + 1, -15.5, 4.5, FLOOR + 7, -15.2, "pod")
+        lb("taquilla_tirador_%d" % k, "glow", k, -0.4, FLOOR + 3, -15.2, 0.4, FLOOR + 5, -14.9, "yellow")
 
     # --- Propulsores: cubos de basura tumbados (tapa con asa delante, boca abierta con fuego detrás),
     #     sujetos al casco con dos correas y sendas cunas que se hunden en la pendiente.
@@ -332,7 +397,7 @@ def java_for(c):
 
 
 def write_java():
-    groups = ["body", "glow", "frame", "dome"]
+    groups = ["body", "glow", "frame", "dome", "bateria"]
     lines = []
     for g in groups:
         lines.append("")
@@ -370,6 +435,7 @@ import net.minecraft.client.model.TexturedModelData;
  *  - glow:  franjas luminosas y fuego de los propulsores (brillo máximo)
  *  - frame: postes y tapa de la cúpula (opaco, se oculta en primera persona)
  *  - dome:  cristal de la cúpula (translúcido, se oculta en primera persona)
+ *  - bateria: los 10 pilotos de la batería (brillo máximo; el renderer enciende solo los que tocan)
  *
  * Textura "space_cruiser.png": atlas de %dx%d con un rectángulo plano de color por cubo.
  */
@@ -388,6 +454,7 @@ public final class SpaceCruiserModel {
 		ModelPartData glow = root.addChild("glow", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
 		ModelPartData frame = root.addChild("frame", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
 		ModelPartData dome = root.addChild("dome", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
+		ModelPartData bateria = root.addChild("bateria", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
 %s
 
 		return TexturedModelData.of(data, TEXTURE_WIDTH, TEXTURE_HEIGHT);

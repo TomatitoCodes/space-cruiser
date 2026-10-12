@@ -7,6 +7,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,6 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -34,6 +37,19 @@ public class SpaceCruiserEntity extends Entity {
 	// Los rellena el cliente (SpaceCruiserClient); en el servidor se quedan a false.
 	public static BooleanSupplier ascendInput = () -> false;
 	public static BooleanSupplier descendInput = () -> false;
+
+	/** Lo rellena el cliente: abre el GPS cuando el piloto hace clic mirando a la pantalla. */
+	public static BiConsumer<SpaceCruiserEntity, PlayerEntity> gpsClick = (ship, player) -> {
+	};
+
+	/** Carga de la batería del reactor, en fire charges (0 a 10). */
+	private static final TrackedData<Float> BATTERY =
+			DataTracker.registerData(SpaceCruiserEntity.class, TrackedDataHandlerRegistry.FLOAT);
+
+	// Posición de la pantalla del GPS respecto al centro de la nave (bloques a escala 1).
+	private static final double GPS_FORWARD = 1.05;
+	private static final double GPS_UP = 1.3;
+	private static final double GPS_RADIUS = 0.9;
 
 	private static final double ACCELERATION = 0.06;
 	private static final double VERTICAL_ACCELERATION = 0.04;
@@ -67,14 +83,41 @@ public class SpaceCruiserEntity extends Entity {
 
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
+		builder.add(BATTERY, 0.0f);
+	}
+
+	public float getBattery() {
+		return this.dataTracker.get(BATTERY);
+	}
+
+	public void setBattery(float value) {
+		this.dataTracker.set(BATTERY, MathHelper.clamp(value, 0.0f, 10.0f));
+	}
+
+	/** ¿Está el piloto mirando hacia la pantalla del GPS? (distancia del rayo de su mirada al centro de la pantalla) */
+	public boolean isLookingAtScreen(PlayerEntity player) {
+		double s = this.modelScale;
+		double yawRad = Math.toRadians(this.getYaw());
+		Vec3d forward = new Vec3d(-Math.sin(yawRad), 0.0, Math.cos(yawRad));
+		Vec3d center = this.getPos().add(forward.multiply(GPS_FORWARD * s)).add(0.0, GPS_UP * s + 0.06, 0.0);
+		Vec3d eye = player.getEyePos();
+		Vec3d look = player.getRotationVec(1.0f);
+		Vec3d toCenter = center.subtract(eye);
+		double t = toCenter.dotProduct(look);
+		if (t < 0.2) {
+			return false;
+		}
+		return toCenter.subtract(look.multiply(t)).length() < GPS_RADIUS * s;
 	}
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		this.setBattery(nbt.getFloat("Battery"));
 	}
 
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.putFloat("Battery", this.getBattery());
 	}
 
 	@Override
@@ -116,6 +159,14 @@ public class SpaceCruiserEntity extends Entity {
 
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
+		// El piloto toca la nave desde dentro: si mira a la pantalla, se abre el GPS (solo en el cliente).
+		if (this.hasPassenger(player)) {
+			if (this.getWorld().isClient) {
+				gpsClick.accept(this, player);
+				return ActionResult.SUCCESS;
+			}
+			return ActionResult.PASS;
+		}
 		if (player.shouldCancelInteraction()) {
 			return ActionResult.PASS;
 		}
