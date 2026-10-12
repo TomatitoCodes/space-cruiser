@@ -126,6 +126,11 @@ public final class GpsNetworking {
 		from.playSound(null, ship.getX(), ship.getY(), ship.getZ(),
 				SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 0.6f);
 
+		// Espiral verde de salida (la de llegada la anima la nueva nave durante unos ticks).
+		for (int i = 0; i <= 20; i++) {
+			SpaceCruiserEntity.spawnPortalSpiral(from, ship.getX(), ship.getY(), ship.getZ(), i / 20.0, ship.modelScale);
+		}
+
 		// La nave no cambia de dimensión: se crea una igual en destino, con la misma batería, y el piloto se sube a ella.
 		SpaceCruiserEntity newShip = (SpaceCruiserEntity) ship.getType().create(to);
 		if (newShip == null) {
@@ -133,6 +138,7 @@ public final class GpsNetworking {
 		}
 		newShip.refreshPositionAndAngles(spot.x, spot.y, spot.z, yaw, 0.0f);
 		newShip.setBattery(battery);
+		newShip.portalTicks = SpaceCruiserEntity.PORTAL_TICKS;
 
 		player.stopRiding();
 		ship.discard();

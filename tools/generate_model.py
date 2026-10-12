@@ -38,6 +38,8 @@ COLORS = {
     "frame": (153, 203, 235),
     "seat": (112, 78, 52),
     "glass": (160, 207, 235),
+    "potion": (70, 225, 95),
+    "cork": (150, 108, 68),
     "cyan": (110, 230, 255),
     "red": (255, 90, 70),
     "bin": (92, 98, 128),
@@ -260,6 +262,13 @@ def build():
     for i in range(10):
         xa = -5.5 + i * 1.1
         add("bat_%d" % i, "bateria", (xa, FLOOR + 1.5, -14.1), (xa + 0.9, FLOOR + 2.5, -13.8), "orange")
+
+    # --- Guiño: botella de cristal con líquido verde en el suelo, junto al reposabrazos derecho (decorativa)
+    BX, BZ = 7.3, -9.0
+    add("botella_liquido", "glow", (BX + 0.5, FLOOR + 0.6, BZ + 0.5), (BX + 2.5, FLOOR + 3.6, BZ + 2.5), "potion")
+    add("botella_corcho", "body", (BX + 0.7, FLOOR + 7.3, BZ + 0.7), (BX + 2.3, FLOOR + 8.3, BZ + 2.3), "cork")
+    add("botella_cuerpo", "botella", (BX, FLOOR + 0.3, BZ), (BX + 3, FLOOR + 4.8, BZ + 3), "glass")
+    add("botella_cuello", "botella", (BX + 0.6, FLOOR + 4.8, BZ + 0.6), (BX + 2.4, FLOOR + 7.4, BZ + 2.4), "glass")
 
     # --- GPS: consola a la izquierda del piloto (lado 1, delante-izquierda), mismo perfil que las otras consolas
     k = 1
@@ -487,7 +496,7 @@ def java_for(c):
 
 
 def write_java():
-    groups = ["body", "glow", "frame", "dome", "bateria"]
+    groups = ["body", "glow", "frame", "dome", "bateria", "botella"]
     lines = []
     for g in groups:
         lines.append("")
@@ -545,6 +554,7 @@ public final class SpaceCruiserModel {
 		ModelPartData frame = root.addChild("frame", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
 		ModelPartData dome = root.addChild("dome", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
 		ModelPartData bateria = root.addChild("bateria", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
+		ModelPartData botella = root.addChild("botella", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
 %s
 
 		return TexturedModelData.of(data, TEXTURE_WIDTH, TEXTURE_HEIGHT);

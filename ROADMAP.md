@@ -13,6 +13,13 @@ Mod de Minecraft para **Fabric 1.21.1**. Nave pilotable inspirada en la Space Cr
 - [x] Mirada libre de 180° en la cabina, A/D para girar solo en primera persona y GPS con mapa del terreno (v1.9)
 - [x] Una sola nave a escala 12/16, asiento 2 px más atrás, volante de mando en el centro, GPS-mapa en el lado izquierdo, propulsores cuadrados y pintura inferior mejorada (v2.1)
 
+## Ambientación (guiños)
+
+- [x] Botella de cristal con líquido verde en el suelo del cockpit (modelo propio, cristal translúcido, decorativa) (v2.5)
+- [x] Partículas verdes en espiral al cambiar de dimensión, a modo de portal (v2.5)
+- [ ] Sonidos propios para el viaje (ahora usa el sonido de teletransporte del Enderman como provisional)
+- Todo el arte y los sonidos serán originales, sin copiar los de la serie
+
 ## Visión
 
 La Space Cruiser es un **item de endgame**: no se consigue al principio, hay que haber progresado por el Nether, el End y el Deep Dark para poder fabricarla.

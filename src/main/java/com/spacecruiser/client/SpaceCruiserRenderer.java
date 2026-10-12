@@ -27,6 +27,7 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 	private final ModelPart frame;
 	private final ModelPart dome;
 	private final ModelPart battery;
+	private final ModelPart bottle;
 
 	public SpaceCruiserRenderer(EntityRendererFactory.Context context, float scale) {
 		super(context);
@@ -36,6 +37,7 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 		this.frame = root.getChild("frame");
 		this.dome = root.getChild("dome");
 		this.battery = root.getChild("bateria");
+		this.bottle = root.getChild("botella");
 		this.shadowRadius = 2.3f * scale;
 	}
 
@@ -88,6 +90,10 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 			battery.getChild("bat_" + i).visible = i < lit;
 		}
 		battery.render(matrices, solid, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+
+		// Botella decorativa del suelo: cristal translúcido, visible también desde dentro.
+		bottle.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(GLASS_TEXTURE)), light,
+				OverlayTexture.DEFAULT_UV);
 
 		if (!hideDome) {
 			frame.render(matrices, solid, light, OverlayTexture.DEFAULT_UV);

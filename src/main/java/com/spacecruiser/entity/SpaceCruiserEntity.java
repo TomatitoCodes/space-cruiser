@@ -13,7 +13,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import org.joml.Vector3f;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
@@ -256,6 +259,22 @@ public class SpaceCruiserEntity extends Entity {
 		this.lerpSteps = Math.max(interpolationSteps, 1);
 	}
 
+	/** Duración (ticks) del espiral verde de llegada tras un viaje entre dimensiones. */
+	public static final int PORTAL_TICKS = 30;
+	private static final DustParticleEffect PORTAL_DUST = new DustParticleEffect(new Vector3f(0.25f, 1.0f, 0.35f), 1.3f);
+	public int portalTicks = 0;
+
+	/** Un paso del espiral verde (tipo portal): tres brazos que giran y suben alrededor de la nave. progress 0..1. */
+	public static void spawnPortalSpiral(ServerWorld world, double x, double y, double z, double progress, float scale) {
+		double radius = (2.6 - 1.4 * progress) * scale;
+		double height = (0.2 + 2.4 * progress) * scale;
+		for (int arm = 0; arm < 3; arm++) {
+			double angle = progress * Math.PI * 6.0 + arm * (Math.PI * 2.0 / 3.0);
+			world.spawnParticles(PORTAL_DUST, x + Math.cos(angle) * radius, y + height, z + Math.sin(angle) * radius,
+					2, 0.05, 0.05, 0.05, 0.0);
+		}
+	}
+
 	@Override
 	public void tick() {
 		super.tick();
@@ -283,6 +302,11 @@ public class SpaceCruiserEntity extends Entity {
 		this.onLanding();
 		for (Entity passenger : this.getPassengerList()) {
 			passenger.onLanding();
+		}
+
+		if (!world.isClient && this.portalTicks > 0) {
+			this.portalTicks--;
+			spawnPortalSpiral((ServerWorld) world, this.getX(), this.getY(), this.getZ(), (PORTAL_TICKS - this.portalTicks) / (double) PORTAL_TICKS, this.modelScale);
 		}
 
 		if (world.isClient) {
