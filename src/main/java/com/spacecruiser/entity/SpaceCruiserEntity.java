@@ -49,8 +49,9 @@ public class SpaceCruiserEntity extends Entity {
 			DataTracker.registerData(SpaceCruiserEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
 	// Posición de la pantalla del GPS respecto al centro de la nave (bloques a escala 1).
-	private static final double GPS_FORWARD = 1.03;
-	private static final double GPS_UP = 1.27;
+	private static final double GPS_FORWARD = 0.64;
+	private static final double GPS_LEFT = 0.64;
+	private static final double GPS_UP = 1.29;
 	private static final double GPS_RADIUS = 0.5;
 
 	private static final double ACCELERATION = 0.06;
@@ -106,7 +107,9 @@ public class SpaceCruiserEntity extends Entity {
 		double s = this.modelScale;
 		double yawRad = Math.toRadians(this.getYaw());
 		Vec3d forward = new Vec3d(-Math.sin(yawRad), 0.0, Math.cos(yawRad));
-		Vec3d center = this.getPos().add(forward.multiply(GPS_FORWARD * s)).add(0.0, GPS_UP * s + 0.06, 0.0);
+		Vec3d left = new Vec3d(Math.cos(yawRad), 0.0, Math.sin(yawRad));
+		Vec3d center = this.getPos().add(forward.multiply(GPS_FORWARD * s)).add(left.multiply(GPS_LEFT * s))
+				.add(0.0, GPS_UP * s + 0.06, 0.0);
 		Vec3d eye = player.getEyePos();
 		Vec3d look = player.getRotationVec(1.0f);
 		Vec3d toCenter = center.subtract(eye);

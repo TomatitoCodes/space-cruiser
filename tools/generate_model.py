@@ -45,6 +45,12 @@ COLORS = {
     "bin_lid": (122, 128, 155),
     "beige": (226, 206, 176),
     "moss": (92, 112, 72),
+    "map_water": (46, 118, 205),
+    "map_water2": (30, 92, 175),
+    "map_grass": (78, 176, 86),
+    "map_grass2": (56, 146, 66),
+    "map_sand": (224, 204, 128),
+    "map_rock": (128, 128, 134),
 }
 NOISE = {"hull": 6, "dark": 5, "pod": 4, "seat": 6, "bin": 6, "bin_dark": 5, "bin_lid": 6, "beige": 4, "moss": 5}
 
@@ -190,22 +196,24 @@ def build():
     for n, s_ in (("izq", -1), ("der", 1)):
         add("suelo_luz_%s" % n, "glow", ((-13.5 if s_ < 0 else 12.5), FLOOR + 0.3, -9), ((-12.5 if s_ < 0 else 13.5), FLOOR + 0.7, 9), "cyan")
 
-    # Asiento del piloto: base, respaldo, reposacabezas, refuerzos laterales y reposabrazos
-    add("asiento_base", "body", (-5, FLOOR, -2), (5, FLOOR + 2, 4), "seat")
-    add("asiento_refuerzo_izq", "body", (-6.5, FLOOR, -1.5), (-5, FLOOR + 5, 4), "seat")
-    add("asiento_refuerzo_der", "body", (5, FLOOR, -1.5), (6.5, FLOOR + 5, 4), "seat")
-    add("respaldo", "body", (-5, FLOOR + 2, 3.5), (5, FLOOR + 13, 5.5), "seat")
-    add("respaldo_ala_izq", "body", (-6.5, FLOOR + 2, 2.5), (-5, FLOOR + 11, 5.5), "seat")
-    add("respaldo_ala_der", "body", (5, FLOOR + 2, 2.5), (6.5, FLOOR + 11, 5.5), "seat")
-    add("reposacabezas", "body", (-3.5, FLOOR + 13, 3.5), (3.5, FLOOR + 17, 5.5), "seat")
-    add("respaldo_luz", "glow", (-1.5, FLOOR + 6, 3.2), (1.5, FLOOR + 11, 3.5), "cyan")
-    add("pedestal_asiento", "body", (-3, FLOOR + 0.3, 0), (3, FLOOR + 1, 6), "dark")
+    # Asiento del piloto: base, respaldo, reposacabezas, refuerzos laterales y reposabrazos.
+    # Todo va ZB px más atrás (el piloto también, ver ModEntities): gana sitio delante y la cabina parece más ancha.
+    ZB = 2.0
+    add("asiento_base", "body", (-5, FLOOR, -2 + ZB), (5, FLOOR + 2, 4 + ZB), "seat")
+    add("asiento_refuerzo_izq", "body", (-6.5, FLOOR, -1.5 + ZB), (-5, FLOOR + 5, 4 + ZB), "seat")
+    add("asiento_refuerzo_der", "body", (5, FLOOR, -1.5 + ZB), (6.5, FLOOR + 5, 4 + ZB), "seat")
+    add("respaldo", "body", (-5, FLOOR + 2, 3.5 + ZB), (5, FLOOR + 13, 5.5 + ZB), "seat")
+    add("respaldo_ala_izq", "body", (-6.5, FLOOR + 2, 2.5 + ZB), (-5, FLOOR + 11, 5.5 + ZB), "seat")
+    add("respaldo_ala_der", "body", (5, FLOOR + 2, 2.5 + ZB), (6.5, FLOOR + 11, 5.5 + ZB), "seat")
+    add("reposacabezas", "body", (-3.5, FLOOR + 13, 3.5 + ZB), (3.5, FLOOR + 17, 5.5 + ZB), "seat")
+    add("respaldo_luz", "glow", (-1.5, FLOOR + 6, 3.2 + ZB), (1.5, FLOOR + 11, 3.5 + ZB), "cyan")
+    add("pedestal_asiento", "body", (-3, FLOOR + 0.3, 0 + ZB), (3, FLOOR + 1, 6 + ZB), "dark")
     for n, s_ in (("izq", -1), ("der", 1)):
         x0, x1 = (-11.0, -9.5) if s_ < 0 else (9.5, 11.0)
-        add("reposabrazos_%s" % n, "body", (x0, FLOOR, -4), (x1, FLOOR + 4.5, 4), "dark")
-        add("reposabrazos_tapa_%s" % n, "body", (x0 - 0.5, FLOOR + 4.5, -4), (x1 + 0.5, FLOOR + 5.5, 4), "pod")
-        add("boton_%s" % n, "glow", (x0 + 0.2, FLOOR + 5.5, -3), (x1 - 0.2, FLOOR + 6, -1.5), "red" if s_ < 0 else "cyan")
-        add("boton2_%s" % n, "glow", (x0 + 0.2, FLOOR + 5.5, 0), (x1 - 0.2, FLOOR + 6, 1.5), "yellow")
+        add("reposabrazos_%s" % n, "body", (x0, FLOOR, -4 + ZB), (x1, FLOOR + 4.5, 4 + ZB), "dark")
+        add("reposabrazos_tapa_%s" % n, "body", (x0 - 0.5, FLOOR + 4.5, -4 + ZB), (x1 + 0.5, FLOOR + 5.5, 4 + ZB), "pod")
+        add("boton_%s" % n, "glow", (x0 + 0.2, FLOOR + 5.5, -3 + ZB), (x1 - 0.2, FLOOR + 6, -1.5 + ZB), "red" if s_ < 0 else "cyan")
+        add("boton2_%s" % n, "glow", (x0 + 0.2, FLOOR + 5.5, 0 + ZB), (x1 - 0.2, FLOOR + 6, 1.5 + ZB), "yellow")
 
     # Pilares de pared en cada arista (marcan los módulos y sujetan el cristal)
     rp = (SILL_IN - 0.9) / math.cos(math.pi / 8)
@@ -214,9 +222,9 @@ def build():
         x, z = rp * math.sin(th), -rp * math.cos(th)
         add("pilar_%d" % k, "body", (x - 0.7, FLOOR, z - 0.7), (x + 0.7, SILL_TOP, z + 0.7), "dark")
 
-    # --- Consola principal (pared del morro, lado 0): panel inclinado con la pantalla del GPS
+    # --- Consola central (lado 0, morro): instrumentos, batería y el volante
     PAN = 25.0
-    for k, w in ((0, 7.0), (1, 5.0), (7, 5.0)):
+    for k, w in ((0, 7.0), (7, 5.0)):
         e = 0.01 * k
         lb("consola_base_a_%d" % k, "body", k, -w, FLOOR, -16.0, w, FLOOR + 4.3 + e, -14.5, "dark")
         lb("consola_base_b_%d" % k, "body", k, -w, FLOOR, -17.2, w, FLOOR + 4.9 + e, -16.0, "dark")
@@ -224,25 +232,67 @@ def build():
         lb("consola_panel_%d" % k, "body", k, -w, FLOOR + 4, -18.4, w, FLOOR + 5.5, -14.5, "pod",
            origin=(0, FLOOR + 4, -14.5), rot=(PAN, 0, 0))
         lb("consola_labio_%d" % k, "body", k, -w - 0.3, FLOOR + 4.3, -14.8, w + 0.3, FLOOR + 5.0, -14.3, "dark")
-    # pantalla grande del GPS con retícula y punto de posición
     sc = dict(origin=(0, FLOOR + 4, -14.5), rot=(PAN, 0, 0))
-    lb("gps_pantalla", "glow", 0, -5.5, FLOOR + 5.5, -17.4, 5.5, FLOOR + 5.9, -15.6, "cyan", **sc)
-    lb("gps_linea_h", "glow", 0, -5.0, FLOOR + 5.9, -16.6, 5.0, FLOOR + 6.1, -16.4, "dark", **sc)
-    lb("gps_linea_v", "glow", 0, -0.1, FLOOR + 5.9, -17.2, 0.1, FLOOR + 6.1, -15.8, "dark", **sc)
-    lb("gps_punto", "glow", 0, -0.6, FLOOR + 5.9, -16.9, 0.6, FLOOR + 6.3, -16.1, "orange", **sc)
+    # pantalla de instrumentos (horizonte) entre los dos mandos
+    lb("panel_pantalla", "glow", 0, -5.5, FLOOR + 5.5, -17.4, 5.5, FLOOR + 5.9, -15.6, "cyan", **sc)
+    lb("panel_linea_h", "glow", 0, -5.0, FLOOR + 5.9, -16.6, 5.0, FLOOR + 6.1, -16.4, "dark", **sc)
+    lb("panel_punto", "glow", 0, -0.6, FLOOR + 5.9, -16.9, 0.6, FLOOR + 6.3, -16.1, "orange", **sc)
     for i, (xa, col) in enumerate(((-6.2, "red"), (-4.8, "orange"), (3.8, "cyan"), (5.2, "yellow"))):
-        lb("gps_boton_%d" % i, "glow", 0, xa, FLOOR + 5.5, -15.4, xa + 0.9, FLOOR + 5.9, -14.9, col, **sc)
-    # pantallas laterales: radar (lado 1) y estado de sistemas (lado 7)
-    lb("radar_pantalla", "glow", 1, -3.8, FLOOR + 5.5, -17.4, 3.8, FLOOR + 5.9, -15.6, "cyan", **sc)
-    lb("radar_anillo", "glow", 1, -1.6, FLOOR + 5.9, -17.0, 1.6, FLOOR + 6.1, -16.0, "dark", **sc)
-    lb("radar_punto", "glow", 1, -0.4, FLOOR + 5.9, -16.7, 0.4, FLOOR + 6.3, -16.3, "yellow", **sc)
-    for i, (xa, hgt, col) in enumerate(((-3.6, 0.6, "cyan"), (-1.6, 0.9, "orange"), (0.4, 0.5, "red"), (2.4, 0.8, "cyan"))):
-        lb("estado_barra_%d" % i, "glow", 7, xa, FLOOR + 5.5, -17.4, xa + 1.2, FLOOR + 5.5 + hgt, -15.6, col, **sc)
+        lb("panel_boton_%d" % i, "glow", 0, xa, FLOOR + 5.5, -15.4, xa + 0.9, FLOOR + 5.9, -14.9, col, **sc)
+    # volante / mando de vuelo en el centro: columna, barra y dos empuñaduras
+    add("volante_columna", "body", (-0.9, FLOOR + 5.2, -16.3), (0.9, FLOOR + 12.5, -14.7), "pod")
+    add("volante_base", "body", (-2, FLOOR + 5.0, -16.6), (2, FLOOR + 6.2, -14.4), "dark")
+    add("volante_barra", "body", (-5.4, FLOOR + 11.3, -16.3), (5.4, FLOOR + 12.5, -14.7), "pod")
+    for n, s_ in (("izq", -1), ("der", 1)):
+        xa, xb = (-5.6, -4.2) if s_ < 0 else (4.2, 5.6)
+        add("volante_mango_%s" % n, "body", (xa, FLOOR + 8.2, -16.4), (xb, FLOOR + 13.8, -14.6), "dark")
+        add("volante_boton_%s" % n, "glow", (xa + 0.2, FLOOR + 13.8, -16.0), (xb - 0.2, FLOOR + 14.3, -15.0),
+            "red" if s_ < 0 else "cyan")
+    # lado 7 (delante-derecha): radar y barras de estado
+    lb("radar_pantalla", "glow", 7, -4.4, FLOOR + 5.5, -17.4, -0.5, FLOOR + 5.9, -15.6, "cyan", **sc)
+    lb("radar_anillo", "glow", 7, -3.4, FLOOR + 5.9, -17.0, -1.5, FLOOR + 6.1, -16.0, "dark", **sc)
+    lb("radar_punto", "glow", 7, -2.7, FLOOR + 5.9, -16.7, -2.1, FLOOR + 6.3, -16.3, "yellow", **sc)
+    for i, (xa, hgt, col) in enumerate(((0.5, 0.6, "cyan"), (1.9, 0.9, "orange"), (3.3, 0.5, "red"))):
+        lb("estado_barra_%d" % i, "glow", 7, xa, FLOOR + 5.5, -17.4, xa + 1.1, FLOOR + 5.5 + hgt, -15.6, col, **sc)
     # batería: marco oscuro y 10 pilotos a lo ancho de la cara frontal de la consola (se encienden según la carga)
     add("bateria_marco", "body", (-6.3, FLOOR + 0.8, -14.5), (6.3, FLOOR + 3.2, -14.1), "pod")
     for i in range(10):
         xa = -5.5 + i * 1.1
         add("bat_%d" % i, "bateria", (xa, FLOOR + 1.5, -14.1), (xa + 0.9, FLOOR + 2.5, -13.8), "orange")
+
+    # --- GPS: consola grande a la izquierda del piloto (lado 1, delante-izquierda) con el mapa
+    k = 1
+    wk = 7.2
+    lb("gps_base_a", "body", k, -wk, FLOOR, -14.5, wk, FLOOR + 4.0, -12.5, "dark")
+    lb("gps_base_b", "body", k, -wk, FLOOR, -16.5, wk, FLOOR + 4.8, -14.5, "dark")
+    lb("gps_base_c", "body", k, -wk, FLOOR, WALL - 0.1, wk, FLOOR + 5.6, -16.5, "dark")
+    mp = dict(origin=(0, FLOOR + 4, -12.5), rot=(PAN, 0, 0))
+    lb("gps_panel", "body", k, -wk, FLOOR + 4, -18.4, wk, FLOOR + 5.5, -12.5, "pod", **mp)
+    lb("gps_labio", "body", k, -wk - 0.3, FLOOR + 4.0, -12.8, wk + 0.3, FLOOR + 4.9, -12.3, "dark")
+    # marco de la pantalla
+    lb("gps_marco_arriba", "body", k, -6.6, FLOOR + 5.5, -17.9, 6.6, FLOOR + 6.0, -17.4, "dark", **mp)
+    lb("gps_marco_abajo", "body", k, -6.6, FLOOR + 5.5, -13.4, 6.6, FLOOR + 6.0, -12.9, "dark", **mp)
+    lb("gps_marco_izq", "body", k, -6.6, FLOOR + 5.5, -17.4, -6.1, FLOOR + 6.0, -13.4, "dark", **mp)
+    lb("gps_marco_der", "body", k, 6.1, FLOOR + 5.5, -17.4, 6.6, FLOOR + 6.0, -13.4, "dark", **mp)
+    # el mapa: cuadrícula de teselas de terreno (agua, hierba, arena, roca)
+    cols_n, rows_n = 9, 3
+    tw = 12.2 / cols_n
+    th = 4.0 / rows_n
+    pal = ["map_water", "map_water2", "map_grass", "map_grass2", "map_sand", "map_rock"]
+    for j in range(rows_n):
+        for i in range(cols_n):
+            v = math.sin(i * 0.95 + 0.6) + math.cos(j * 1.9 + i * 0.35) + 0.4 * math.sin(i * 2.3 + j)
+            idx = 0 if v < -1.0 else 1 if v < -0.45 else 4 if v < -0.1 else 3 if v < 0.55 else 2 if v < 1.3 else 5
+            xa = -6.1 + i * tw
+            za = -17.4 + j * th
+            lb("mapa_tesela_%d_%d" % (j, i), "glow", k, xa, FLOOR + 5.5, za, xa + tw - 0.12, FLOOR + 5.9, za + th - 0.12, pal[idx], **mp)
+    # ruta (cian), posición de la nave (naranja) y botones del marco
+    lb("mapa_ruta_1", "glow", k, -4.6, FLOOR + 5.9, -15.9, 0.2, FLOOR + 6.1, -15.6, "cyan", **mp)
+    lb("mapa_ruta_2", "glow", k, -0.2, FLOOR + 5.9, -16.5, 0.2, FLOOR + 6.1, -15.6, "cyan", **mp)
+    lb("mapa_ruta_3", "glow", k, -0.2, FLOOR + 5.9, -16.5, 3.6, FLOOR + 6.1, -16.2, "cyan", **mp)
+    lb("mapa_nave", "glow", k, 3.3, FLOOR + 5.9, -16.8, 4.5, FLOOR + 6.4, -15.8, "orange", **mp)
+    for i, (xa, col) in enumerate(((-6.0, "red"), (-4.6, "orange"), (4.4, "cyan"), (5.8, "yellow"))):
+        lb("mapa_boton_%d" % i, "glow", k, xa, FLOOR + 5.5, -13.2, xa + 0.7, FLOOR + 5.9, -12.7, col, **mp)
 
     # --- Reactor central (pared trasera, lado 4): núcleo brillante entre aletas
     lb("reactor_base", "body", 4, -6, FLOOR, -18.4, 6, FLOOR + 3, -13.5, "dark")
@@ -269,8 +319,8 @@ def build():
         lb("taquilla_puerta_%d" % k, "body", k, -4.5, FLOOR + 1, -15.5, 4.5, FLOOR + 7, -15.2, "pod")
         lb("taquilla_tirador_%d" % k, "glow", k, -0.4, FLOOR + 3, -15.2, 0.4, FLOOR + 5, -14.9, "yellow")
 
-    # --- Propulsores: cubos de basura tumbados (tapa con asa delante, boca abierta con fuego detrás),
-    #     sujetos al casco con dos correas y sendas cunas que se hunden en la pendiente.
+    # --- Propulsores: cubos de basura tumbados de sección cuadrada (14x14, tapa de 16x16), con asa delante,
+    #     boca abierta con fuego detrás y sujetos al casco con dos correas y sendas cunas hundidas en la pendiente.
     for n, s_ in (("izq", -1), ("der", 1)):
         def fx(a, b, s_=s_):
             return (-b, -a) if s_ < 0 else (a, b)
@@ -278,42 +328,42 @@ def build():
         def box(name, xs, y0, y1, z0, z1, group, slot, n=n):
             add("%s_%s" % (name, n), group, (xs[0], y0, z0), (xs[1], y1, z1), slot)
 
-        # cuerpo hueco (paredes de 1,5 px), eje a lo largo de Z
-        box("tubo_arriba", fx(24, 36), 34.5, 36, -9, 9, "body", "bin")
-        box("tubo_abajo", fx(24, 36), 22, 23.5, -9, 9, "body", "bin")
-        box("tubo_interior", fx(24, 25.5), 23.5, 34.5, -9, 9, "body", "bin")
-        box("tubo_exterior", fx(34.5, 36), 23.5, 34.5, -9, 9, "body", "bin")
-        # tapa delantera más ancha, con panel hundido y asa
-        box("tapa_delantera", fx(23, 37), 21, 37, -11, -9, "body", "bin_lid")
-        box("tapa_panel", fx(25, 35), 23, 35, -11.5, -11, "body", "bin")
-        box("aro_tapa", fx(23.5, 36.5), 21.5, 36.5, -9, -7.5, "body", "bin_dark")
+        # cuerpo hueco (paredes de 1,5 px): x 23..37, y 22..36
+        box("tubo_arriba", fx(23, 37), 34.5, 36, -9, 9, "body", "bin")
+        box("tubo_abajo", fx(23, 37), 22, 23.5, -9, 9, "body", "bin")
+        box("tubo_interior", fx(23, 24.5), 23.5, 34.5, -9, 9, "body", "bin")
+        box("tubo_exterior", fx(35.5, 37), 23.5, 34.5, -9, 9, "body", "bin")
+        # tapa delantera más ancha (16x16), con panel hundido y asa
+        box("tapa_delantera", fx(22, 38), 21, 37, -11, -9, "body", "bin_lid")
+        box("tapa_panel", fx(24, 36), 23, 35, -11.5, -11, "body", "bin")
+        box("aro_tapa", fx(22.5, 37.5), 21.5, 36.5, -9, -7.5, "body", "bin_dark")
         box("asa_pata_1", fx(26.5, 27.5), 28.2, 30.8, -12.6, -11.5, "body", "pod")
         box("asa_pata_2", fx(32.5, 33.5), 28.2, 30.8, -12.6, -11.5, "body", "pod")
         box("asa_barra", fx(26.5, 33.5), 28.2, 29.6, -13.6, -12.4, "body", "pod")
         # borde trasero (la boca por donde sale el fuego)
-        box("labio_arriba", fx(23, 37), 34.5, 37, 9, 10.8, "body", "bin_lid")
-        box("labio_abajo", fx(23, 37), 21, 23.5, 9, 10.8, "body", "bin_lid")
-        box("labio_interior", fx(23, 25.5), 23.5, 34.5, 9, 10.8, "body", "bin_lid")
-        box("labio_exterior", fx(34.5, 37), 23.5, 34.5, 9, 10.8, "body", "bin_lid")
+        box("labio_arriba", fx(22, 38), 34.5, 37, 9, 10.8, "body", "bin_lid")
+        box("labio_abajo", fx(22, 38), 21, 23.5, 9, 10.8, "body", "bin_lid")
+        box("labio_interior", fx(22, 24.5), 23.5, 34.5, 9, 10.8, "body", "bin_lid")
+        box("labio_exterior", fx(35.5, 38), 23.5, 34.5, 9, 10.8, "body", "bin_lid")
         # costillas a lo largo del cuerpo (arriba, abajo y dos en la cara exterior)
-        for j, xo in enumerate((26.5, 29.5, 32.5)):
+        for j, xo in enumerate((25.5, 29.5, 33.5)):
             box("costilla_arriba_%d" % j, fx(xo, xo + 1), 36, 36.4, -7.5, 9, "body", "bin_dark")
             box("costilla_abajo_%d" % j, fx(xo, xo + 1), 21.6, 22, -7.5, 9, "body", "bin_dark")
-        box("costilla_ext_1", fx(36, 36.4), 24, 25, -7.5, 9, "body", "bin_dark")
-        box("costilla_ext_2", fx(36, 36.4), 33, 34, -7.5, 9, "body", "bin_dark")
+        box("costilla_ext_1", fx(37, 37.4), 24.5, 25.5, -7.5, 9, "body", "bin_dark")
+        box("costilla_ext_2", fx(37, 37.4), 32.5, 33.5, -7.5, 9, "body", "bin_dark")
         # correas alrededor del cuerpo y cunas hundidas en el casco
         for z0 in (-5.8, 4.2):
             z1 = z0 + 1.6
             tag = "%d" % round(z0)
-            box("correa_arriba_" + tag, fx(23.2, 36.8), 36, 36.8, z0, z1, "body", "pod")
-            box("correa_abajo_" + tag, fx(23.2, 36.8), 21.2, 22, z0, z1, "body", "pod")
-            box("correa_interior_" + tag, fx(23.2, 24), 22, 36, z0, z1, "body", "pod")
-            box("correa_exterior_" + tag, fx(36, 36.8), 22, 36, z0, z1, "body", "pod")
-            box("cuna_" + tag, fx(26, 34), 17.2, 21.2, z0, z1, "body", "dark")
+            box("correa_arriba_" + tag, fx(22.2, 37.8), 36, 36.8, z0, z1, "body", "pod")
+            box("correa_abajo_" + tag, fx(22.2, 37.8), 21.2, 22, z0, z1, "body", "pod")
+            box("correa_interior_" + tag, fx(22.2, 23), 22, 36, z0, z1, "body", "pod")
+            box("correa_exterior_" + tag, fx(37, 37.8), 22, 36, z0, z1, "body", "pod")
+            box("cuna_" + tag, fx(25, 35), 17.2, 21.2, z0, z1, "body", "dark")
         # interior: brasa y llama (a brillo máximo)
-        box("fondo_brasa", fx(25.5, 34.5), 23.5, 34.5, 4.5, 6, "glow", "orange")
-        box("fuego_1", fx(26.5, 29.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
-        box("fuego_2", fx(30.5, 33.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
+        box("fondo_brasa", fx(24.5, 35.5), 23.5, 34.5, 4.5, 6, "glow", "orange")
+        box("fuego_1", fx(25.5, 28.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
+        box("fuego_2", fx(31.5, 34.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
         box("fuego_nucleo", fx(28.5, 31.5), 27, 31, 6, 11, "glow", "yellow")
 
     # --- Patas
@@ -357,8 +407,46 @@ def pack():
     return tex_h
 
 
+def paint_underside(px, c, rng):
+    """Pintura del bajo del casco: paneles de dos tonos, costuras en las aristas y remaches.
+
+    Se pinta la cara inferior del cubo (en la caja UV de Minecraft es la segunda del bloque superior)."""
+    sx, sy, sz = c["size"]
+    u, v = c["uv"]
+    rx = int(round(u + sz + sx))
+    ry = int(round(v))
+    rw = max(1, int(round(sx)))
+    rh = max(1, int(round(sz)))
+    parts = c["name"].split("_")
+    try:
+        panel = int(parts[2]) if c["name"].startswith(("pend_inf", "soporte_inf")) else 0
+    except ValueError:
+        panel = 0
+    k = c["lado"] or 0
+    tone = (6 if panel % 2 else -4) + (3 if k % 2 else 0)
+    base = (58 + tone, 63 + tone, 76 + tone)   # gris azulado, algo más frío que el resto
+    for yy in range(ry, ry + rh):
+        for xx in range(rx, rx + rw):
+            grad = 0.92 + 0.14 * (xx - rx) / max(1, rw - 1)
+            n = rng.randint(-4, 4)
+            col = [max(0, min(255, int(ch * grad) + n)) for ch in base]
+            edge_x = xx in (rx, rx + rw - 1)
+            edge_y = rh >= 6 and yy in (ry, ry + rh - 1)
+            if edge_x or edge_y:
+                col = [max(0, ch - 22) for ch in col]           # costura
+            elif rh >= 6 and (xx - rx) % 8 == 3 and yy in (ry + 2, ry + rh - 3):
+                col = [min(255, ch + 28) for ch in col]          # remache
+            elif rh < 6 and (xx - rx) % 7 == 3 and yy == ry:
+                col = [min(255, ch + 24) for ch in col]          # remache en los tramos estrechos
+            px[xx, yy] = tuple(col) + (255,)
+    if rh >= 6:  # costura central en las placas grandes (el fondo del platillo)
+        for xx in range(rx, rx + rw):
+            px[xx, ry + rh // 2] = tuple(max(0, ch - 14) for ch in px[xx, ry + rh // 2][:3]) + (255,)
+
+
 def paint(tex_h):
     random.seed(7)
+    rng = random.Random(11)
     img = Image.new("RGBA", (TEX_W, tex_h), (0, 0, 0, 0))
     px = img.load()
     for c in cubes:
@@ -371,6 +459,8 @@ def paint(tex_h):
             for xx in range(x0 - 1, x0 + w + 1):
                 d = random.randint(-amp, amp) if amp else 0
                 px[xx, yy] = tuple(max(0, min(255, v + d)) for v in base) + (255,)
+        if c["name"].startswith(("pend_inf", "soporte_inf", "fondo_")):
+            paint_underside(px, c, rng)
     img.save(TEX_OUT)
 
 

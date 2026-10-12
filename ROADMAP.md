@@ -6,12 +6,12 @@ Mod de Minecraft para **Fabric 1.21.1**. Nave pilotable inspirada en la Space Cr
 
 - [x] Nave pilotable: se puede volar con ella
 - [x] Repositorio en GitHub (`space-cruiser`) y compilación del jar con GitHub Actions
-- [x] Modelo propio (casco octogonal, cúpula de cristal, propulsores tipo cubo de basura) a escala 14/16
+- [x] Modelo propio (casco octogonal, cúpula de cristal, propulsores tipo cubo de basura) a escala 12/16
 - [x] Al bajarse, el jugador aparece junto a la nave
 - [x] GPS del cockpit y nuevo interior (v1.7)
 - [x] Cámara de cabina y clic derecho sobre la pantalla del GPS (v1.8)
 - [x] Mirada libre de 180° en la cabina, A/D para girar solo en primera persona y GPS con mapa del terreno (v1.9)
-- [x] Tres tamaños en el mismo jar: actual (14/16), -1 px (13/16) y -2 px (12/16) (v2.0)
+- [x] Una sola nave a escala 12/16, asiento 2 px más atrás, volante de mando en el centro, GPS-mapa en el lado izquierdo, propulsores cuadrados y pintura inferior mejorada (v2.1)
 
 ## Visión
 

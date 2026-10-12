@@ -36,8 +36,6 @@ public class SpaceCruiserMod implements ModInitializer {
 		ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS)
 				.register(entries -> {
 					entries.add(ModItems.SPACE_CRUISER);
-					entries.add(ModItems.SPACE_CRUISER_MINUS_1);
-					entries.add(ModItems.SPACE_CRUISER_MINUS_2);
 				});
 	}
 
