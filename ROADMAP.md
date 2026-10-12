@@ -19,29 +19,32 @@ La Space Cruiser es un **item de endgame**: no se consigue al principio, hay que
 
 ## Próximas funcionalidades
 
-### 1. Receta de endgame (borrador)
+### 1. Receta de endgame (v2.4, borrador)
 
-- [ ] Craftear la nave requiere materiales del Nether y del End (referencia de nivel: las elytras)
-- [ ] La nave se fabrica por partes, que luego se ensamblan:
+La nave se fabrica por partes, todas en mesa de crafteo, que luego se ensamblan:
 
-| Pieza | Cant. | Dónde | Ingredientes (propuesta) |
-|---|---|---|---|
-| Reactor | 2 | Mesa de crafteo | Lingote de netherita, lágrima de ghast, vara de blaze, bloque de redstone |
-| Casco | 1 | Mesa de herrería | Plantilla de mejora de netherita, caparazones de shulker, varas del End |
-| Cabina | 1 | Mesa de crafteo | 5 cristal, elytra, 2 diamantes, caparazón de shulker (patrón abajo) |
-| Consola de navegación | 1 | Mesa de crafteo | Recovery compass, ojo de ender |
-| Ensamblaje final | 1 | Mesa de crafteo | 2 reactores, casco, cabina, consola |
+| Pieza | Cant. | Ingredientes |
+|---|---|---|
+| Reactor | 2 | 4 bloques de magma, 2 lingotes de netherita, 2 blast furnaces, heavy core |
+| Casco | 1 | 4 caparazones de shulker, 2 diamantes, 3 cristales de prismarina |
+| Cabina | 1 | 5 cristal tintado, elytra, 2 barras del End, caparazón de shulker |
+| Consola de navegación | 1 | Recovery compass, 4 ojos de ender, 4 bloques de redstone |
+| Ensamblaje final | 1 | 2 reactores, casco, cabina, consola |
 
-Patrón de la cabina:
+Patrones (M magma, N netherita, B blast furnace, C heavy core / S shulker, D diamante, P cristal de prismarina / T cristal tintado, E elytra, R barra del End / R bloque de redstone, O ojo de ender, C recovery compass):
 
 ```
-C  C  C
-C  E  C
-D  S  D
+Reactor     Casco     Cabina    Consola   Ensamblaje
+M N M       S D S     T T T     R O R     - H -
+B C B       P P P     T E T     O C O     R K R
+M N M       S D S     R S R     R O R     - N -
 ```
 
-C = cristal, E = elytra, D = diamante, S = caparazón de shulker
+H = casco, R = reactor, K = cabina, N = consola
 
+Zonas que hay que haber pasado: Nether (netherita, magma), End (elytra, shulker, barras), Océano/monumento (prismarina), Deep Dark (recovery compass), Trial Chambers (heavy core), geodas de amatista (cristal tintado).
+
+- [x] Recetas y objetos de las piezas implementados (iconos provisionales; los definitivos se sustituyen por los mismos nombres de archivo)
 - [ ] Ajustar cantidades y balance al probar en juego
 
 ### 2. GPS de navegación dentro del cockpit

@@ -29,5 +29,9 @@
   "gui.spacecruiser.gps.dir.w": "W",
   "gui.spacecruiser.gps.dir.nw": "NW",
   "hud.spacecruiser.gps_hint": "Right click: open GPS",
-  "gui.spacecruiser.gps.map": "Map"
+  "gui.spacecruiser.gps.map": "Map",
+  "item.spacecruiser.reactor": "Reactor",
+  "item.spacecruiser.hull": "Hull",
+  "item.spacecruiser.cockpit": "Cockpit",
+  "item.spacecruiser.navigation_console": "Navigation Console"
 }

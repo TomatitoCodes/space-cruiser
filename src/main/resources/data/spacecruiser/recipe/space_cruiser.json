@@ -2,16 +2,23 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "SGS",
-    "IFI",
-    "YSY"
+    " H ",
+    "RKR",
+    " N "
   ],
   "key": {
-    "S": { "item": "minecraft:stone_slab" },
-    "G": { "item": "minecraft:glass" },
-    "I": { "item": "minecraft:iron_ingot" },
-    "F": { "item": "minecraft:blast_furnace" },
-    "Y": { "item": "minecraft:gold_ingot" }
+    "H": {
+      "item": "spacecruiser:hull"
+    },
+    "R": {
+      "item": "spacecruiser:reactor"
+    },
+    "K": {
+      "item": "spacecruiser:cockpit"
+    },
+    "N": {
+      "item": "spacecruiser:navigation_console"
+    }
   },
   "result": {
     "id": "spacecruiser:space_cruiser",
