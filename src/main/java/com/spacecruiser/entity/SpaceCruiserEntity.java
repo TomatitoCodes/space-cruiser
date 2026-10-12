@@ -240,11 +240,11 @@ public class SpaceCruiserEntity extends Entity {
 		double sin = Math.sin(yawRad);
 		double cos = Math.cos(yawRad);
 		for (int sign = -1; sign <= 1; sign += 2) {
-			// Boca trasera de los cubos de basura: a ~1,9 bloques del centro, ~0,75 por detrás y a ~1,95 de altura.
+			// Boca trasera de los cubos de basura: a ~1,9 bloques del centro, ~0,75 por detrás y a ~1,8 de altura.
 			double s = this.modelScale;
 			double px = this.getX() + cos * 1.9 * s * sign + (-sin) * -0.8 * s;
 			double pz = this.getZ() + sin * 1.9 * s * sign + cos * -0.8 * s;
-			this.getWorld().addParticle(ParticleTypes.FLAME, px, this.getY() + 1.95 * s, pz, -dx * 0.3, 0.0, -dz * 0.3);
+			this.getWorld().addParticle(ParticleTypes.FLAME, px, this.getY() + 1.8 * s, pz, -dx * 0.3, 0.0, -dz * 0.3);
 		}
 	}
 }

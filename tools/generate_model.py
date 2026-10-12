@@ -40,8 +40,13 @@ COLORS = {
     "glass": (160, 207, 235),
     "cyan": (110, 230, 255),
     "red": (255, 90, 70),
+    "bin": (92, 98, 128),
+    "bin_dark": (64, 68, 94),
+    "bin_lid": (122, 128, 155),
+    "beige": (226, 206, 176),
+    "moss": (92, 112, 72),
 }
-NOISE = {"hull": 6, "dark": 5, "pod": 4, "seat": 6}
+NOISE = {"hull": 6, "dark": 5, "pod": 4, "seat": 6, "bin": 6, "bin_dark": 5, "bin_lid": 6, "beige": 4, "moss": 5}
 
 cubes = []  # cada cubo: dict
 
@@ -74,10 +79,11 @@ def build():
     SILL_TOP = 23.5       # el borde opaco es bajo para que el piloto se vea entero
     GLASS_TOP = 40.0      # el cristal empieza a curvarse 1 px antes (antes 41)
     # Perfil de la cúpula (apotema, altura): pared vertical y tres tramos cada vez más suaves
-    PROFILE = [(19.0, 40.0), (16.6, 43.6), (13.0, 46.6), (9.8, 48.5)]
+    PROFILE = [(19.0, 40.0), (16.6, 42.8), (13.0, 45.0), (9.8, 46.5)]
 
     # --- Cúpula: tapa y postes (el borde opaco va por lados, más abajo)
-    octagon("tapa", 9.8, 48.5, 50, "frame", "frame")
+    # techo sólido integrado: su cara superior queda a ras del cristal, no un bloque por encima
+    octagon("tapa", PROFILE[-1][0], PROFILE[-1][1] - 1.5, PROFILE[-1][1], "frame", "frame")
     rv = DOME / math.cos(math.pi / 8)
     for k in range(8):
         th = (22.5 + 45 * k) / D
@@ -159,17 +165,16 @@ def build():
 
     # --- Nervios del marco sobre las aristas de la cúpula (siguen el perfil curvo hasta la tapa)
     for k in range(8):
-        yaw = -(22.5 + 45 * k)
         for i in range(3):
             r_a, y_a = PROFILE[i]
             r_b, y_b = PROFILE[i + 1]
             rv_a, rv_b = r_a / math.cos(math.pi / 8), r_b / math.cos(math.pi / 8)
             ang = math.atan2(y_b - y_a, rv_a - rv_b) * D
             ln = math.hypot(rv_a - rv_b, y_b - y_a)
-            add("nervio_%d_%d" % (i, k), "frame", (-0.7, y_a - 0.9, -rv_a), (0.7, y_a + 0.7, -rv_a + ln), "frame",
-                origin=(0, y_a, -rv_a), rot=(-ang, yaw, 0))
-    # baliza sobre la tapa
-    add("baliza", "glow", (-1.2, 50, -1.2), (1.2, 52, 1.2), "yellow")
+            add("nervio_%d_%d" % (i, k), "frame", (-0.7, y_a - 0.9, -rv_a), (0.7, y_a + 0.7, -rv_a + ln), "frame", 8 + k,
+                origin=(0, y_a, -rv_a), rot=(-ang, 0, 0))
+    # piloto de luz embutido en el techo
+    add("baliza", "glow", (-2, PROFILE[-1][1], -2), (2, PROFILE[-1][1] + 0.3, 2), "yellow")
 
     # --- Cabina: todo bajo y pegado a las paredes; el jugador (cadera a 16 px) queda libre y a la vista.
     # Nariz de la nave = -Z. Las piernas del piloto llegan hasta ~z=-11, así que la consola va más allá.
@@ -199,28 +204,59 @@ def build():
     add("boton_consola_1", "glow", (-6, FLOOR + 3.2, -14.3), (-4.5, FLOOR + 3.8, -13.7), "red")
     add("boton_consola_2", "glow", (4.5, FLOOR + 3.2, -14.3), (6, FLOOR + 3.8, -13.7), "orange")
 
-    # --- Propulsores: cubos de basura tumbados, cerrados delante y abiertos detrás (fuego)
-    for n, s in (("izq", -1), ("der", 1)):
-        def fx(a, b, s=s):
-            return (-b, -a) if s < 0 else (a, b)
+    # --- Propulsores: cubos de basura tumbados (tapa con asa delante, boca abierta con fuego detrás),
+    #     sujetos al casco con dos correas y sendas cunas que se hunden en la pendiente.
+    for n, s_ in (("izq", -1), ("der", 1)):
+        def fx(a, b, s_=s_):
+            return (-b, -a) if s_ < 0 else (a, b)
 
         def box(name, xs, y0, y1, z0, z1, group, slot, n=n):
             add("%s_%s" % (name, n), group, (xs[0], y0, z0), (xs[1], y1, z1), slot)
 
-        box("tubo_arriba", fx(24, 36), 35.5, 37, -9, 9, "body", "pod")
-        box("tubo_abajo", fx(24, 36), 25, 26.5, -9, 9, "body", "pod")
-        box("tubo_interior", fx(24, 25.5), 26.5, 35.5, -9, 9, "body", "pod")
-        box("tubo_exterior", fx(34.5, 36), 26.5, 35.5, -9, 9, "body", "pod")
-        box("tapa_delantera", fx(23, 37), 24, 38, -11, -9, "body", "hull")
-        box("asa_delantera", fx(28, 32), 30, 32, -12, -11, "body", "dark")
-        box("labio_arriba", fx(23, 37), 36.5, 38, 9, 10.5, "body", "hull")
-        box("labio_abajo", fx(23, 37), 24, 25.5, 9, 10.5, "body", "hull")
-        box("labio_interior", fx(23, 24.5), 25.5, 36.5, 9, 10.5, "body", "hull")
-        box("labio_exterior", fx(35.5, 37), 25.5, 36.5, 9, 10.5, "body", "hull")
-        box("fondo_brasa", fx(25.5, 34.5), 26.5, 35.5, 6, 7.5, "glow", "orange")
-        box("fuego_1", fx(27, 29.5), 28, 34, 7.5, 12, "glow", "orange")
-        box("fuego_2", fx(30.5, 33), 28, 34, 7.5, 12, "glow", "orange")
-        box("soporte", fx(20, 24), 28, 34, -3, 3, "body", "dark")
+        # cuerpo hueco (paredes de 1,5 px), eje a lo largo de Z
+        box("tubo_arriba", fx(24, 36), 34.5, 36, -9, 9, "body", "bin")
+        box("tubo_abajo", fx(24, 36), 22, 23.5, -9, 9, "body", "bin")
+        box("tubo_interior", fx(24, 25.5), 23.5, 34.5, -9, 9, "body", "bin")
+        box("tubo_exterior", fx(34.5, 36), 23.5, 34.5, -9, 9, "body", "bin")
+        # tapa delantera más ancha, con panel hundido y asa
+        box("tapa_delantera", fx(23, 37), 21, 37, -11, -9, "body", "bin_lid")
+        box("tapa_panel", fx(25, 35), 23, 35, -11.5, -11, "body", "bin")
+        box("aro_tapa", fx(23.5, 36.5), 21.5, 36.5, -9, -7.5, "body", "bin_dark")
+        box("asa_pata_1", fx(26.5, 27.5), 28.2, 30.8, -12.6, -11.5, "body", "pod")
+        box("asa_pata_2", fx(32.5, 33.5), 28.2, 30.8, -12.6, -11.5, "body", "pod")
+        box("asa_barra", fx(26.5, 33.5), 28.2, 29.6, -13.6, -12.4, "body", "pod")
+        # borde trasero (la boca por donde sale el fuego)
+        box("labio_arriba", fx(23, 37), 34.5, 37, 9, 10.8, "body", "bin_lid")
+        box("labio_abajo", fx(23, 37), 21, 23.5, 9, 10.8, "body", "bin_lid")
+        box("labio_interior", fx(23, 25.5), 23.5, 34.5, 9, 10.8, "body", "bin_lid")
+        box("labio_exterior", fx(34.5, 37), 23.5, 34.5, 9, 10.8, "body", "bin_lid")
+        # costillas a lo largo del cuerpo (arriba, abajo y dos en la cara exterior)
+        for j, xo in enumerate((26.5, 29.5, 32.5)):
+            box("costilla_arriba_%d" % j, fx(xo, xo + 1), 36, 36.4, -7.5, 9, "body", "bin_dark")
+            box("costilla_abajo_%d" % j, fx(xo, xo + 1), 21.6, 22, -7.5, 9, "body", "bin_dark")
+        box("costilla_ext_1", fx(36, 36.4), 24, 25, -7.5, 9, "body", "bin_dark")
+        box("costilla_ext_2", fx(36, 36.4), 33, 34, -7.5, 9, "body", "bin_dark")
+        # etiqueta de reciclaje en la cara exterior
+        box("etiqueta", fx(36, 36.3), 26.5, 31.5, -4, 2, "body", "beige")
+        box("etiqueta_arriba", fx(36.3, 36.6), 30.4, 31, -3.4, 1.4, "body", "moss")
+        box("etiqueta_abajo", fx(36.3, 36.6), 27, 27.6, -3.4, 1.4, "body", "moss")
+        box("etiqueta_izq", fx(36.3, 36.6), 27, 31, -3.4, -2.8, "body", "moss")
+        box("etiqueta_der", fx(36.3, 36.6), 27, 31, 0.8, 1.4, "body", "moss")
+        box("etiqueta_centro", fx(36.3, 36.6), 28.6, 29.4, -1.2, -0.4, "body", "bin_dark")
+        # correas alrededor del cuerpo y cunas hundidas en el casco
+        for z0 in (-5.8, 4.2):
+            z1 = z0 + 1.6
+            tag = "%d" % round(z0)
+            box("correa_arriba_" + tag, fx(23.2, 36.8), 36, 36.8, z0, z1, "body", "pod")
+            box("correa_abajo_" + tag, fx(23.2, 36.8), 21.2, 22, z0, z1, "body", "pod")
+            box("correa_interior_" + tag, fx(23.2, 24), 22, 36, z0, z1, "body", "pod")
+            box("correa_exterior_" + tag, fx(36, 36.8), 22, 36, z0, z1, "body", "pod")
+            box("cuna_" + tag, fx(26, 34), 17.2, 21.2, z0, z1, "body", "dark")
+        # interior: brasa y llama (a brillo máximo)
+        box("fondo_brasa", fx(25.5, 34.5), 23.5, 34.5, 4.5, 6, "glow", "orange")
+        box("fuego_1", fx(26.5, 29.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
+        box("fuego_2", fx(30.5, 33.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
+        box("fuego_nucleo", fx(28.5, 31.5), 27, 31, 6, 11, "glow", "yellow")
 
     # --- Patas
     for i, (sx, sz) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
@@ -311,13 +347,14 @@ def write_java():
         members = [c for c in cubes if c["group"] == g]
         for c in [m for m in members if m["lado"] is None]:
             lines.append(call(g, c))
-        for k in range(8):
+        for k in range(16):
             side = [m for m in members if m["lado"] == k]
             if not side:
                 continue
             var = "%s_lado%d" % (g, k)
+            yaw_g = -45 * k if k < 8 else -45 * (k - 8) - 22.5
             lines.append("\t\tModelPartData %s = %s.addChild(\"lado_%d\", ModelPartBuilder.create(), "
-                         "ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(%d), 0));" % (var, g, k, -45 * k))
+                         "ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(%s), 0));" % (var, g, k, ("%g" % yaw_g)))
             for c in side:
                 lines.append(call(var, c))
 
