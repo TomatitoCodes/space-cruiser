@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "spacecruiser",
+  "version": "${version}",
+  "name": "Space Cruiser",
+  "description": "Una nave espacial pilotable con cúpula de cristal, propulsores y luces ámbar. Fabrícala, siéntate y vuela.",
+  "authors": ["Victor"],
+  "license": "All-Rights-Reserved",
+  "icon": "assets/spacecruiser/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.spacecruiser.SpaceCruiserMod"],
+    "client": ["com.spacecruiser.client.SpaceCruiserClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
