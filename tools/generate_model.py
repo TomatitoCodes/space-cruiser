@@ -239,15 +239,16 @@ def build():
     lb("panel_punto", "glow", 0, -0.6, FLOOR + 5.9, -16.9, 0.6, FLOOR + 6.3, -16.1, "orange", **sc)
     for i, (xa, col) in enumerate(((-6.2, "red"), (-4.8, "orange"), (3.8, "cyan"), (5.2, "yellow"))):
         lb("panel_boton_%d" % i, "glow", 0, xa, FLOOR + 5.5, -15.4, xa + 0.9, FLOOR + 5.9, -14.9, col, **sc)
-    # volante / mando de vuelo en el centro: columna, barra y dos empuñaduras
-    add("volante_columna", "body", (-0.9, FLOOR + 5.2, -16.3), (0.9, FLOOR + 12.5, -14.7), "pod")
-    add("volante_base", "body", (-2, FLOOR + 5.0, -16.6), (2, FLOOR + 6.2, -14.4), "dark")
-    add("volante_barra", "body", (-5.4, FLOOR + 11.3, -16.3), (5.4, FLOOR + 12.5, -14.7), "pod")
+    # volante / mando de vuelo en el centro, inclinado hacia el piloto (pivote en la base)
+    yk = dict(origin=(0, FLOOR + 5.5, -15.5), rot=(-22.0, 0, 0))
+    lb("volante_base", "body", 0, -2.2, FLOOR + 5.0, -16.8, 2.2, FLOOR + 6.4, -14.2, "dark")
+    lb("volante_columna", "body", 0, -0.9, FLOOR + 5.5, -16.2, 0.9, FLOOR + 11.5, -14.8, "pod", **yk)
+    lb("volante_barra", "body", 0, -4.8, FLOOR + 10.5, -16.2, 4.8, FLOOR + 11.7, -14.8, "pod", **yk)
     for n, s_ in (("izq", -1), ("der", 1)):
-        xa, xb = (-5.6, -4.2) if s_ < 0 else (4.2, 5.6)
-        add("volante_mango_%s" % n, "body", (xa, FLOOR + 8.2, -16.4), (xb, FLOOR + 13.8, -14.6), "dark")
-        add("volante_boton_%s" % n, "glow", (xa + 0.2, FLOOR + 13.8, -16.0), (xb - 0.2, FLOOR + 14.3, -15.0),
-            "red" if s_ < 0 else "cyan")
+        xa, xb = (-5.0, -3.8) if s_ < 0 else (3.8, 5.0)
+        lb("volante_mango_%s" % n, "body", 0, xa, FLOOR + 8.0, -16.3, xb, FLOOR + 12.6, -14.7, "dark", **yk)
+        lb("volante_boton_%s" % n, "glow", 0, xa + 0.2, FLOOR + 12.6, -15.9, xb - 0.2, FLOOR + 13.1, -15.1,
+           "red" if s_ < 0 else "cyan", **yk)
     # lado 7 (delante-derecha): radar y barras de estado
     lb("radar_pantalla", "glow", 7, -4.4, FLOOR + 5.5, -17.4, -0.5, FLOOR + 5.9, -15.6, "cyan", **sc)
     lb("radar_anillo", "glow", 7, -3.4, FLOOR + 5.9, -17.0, -1.5, FLOOR + 6.1, -16.0, "dark", **sc)
@@ -260,39 +261,38 @@ def build():
         xa = -5.5 + i * 1.1
         add("bat_%d" % i, "bateria", (xa, FLOOR + 1.5, -14.1), (xa + 0.9, FLOOR + 2.5, -13.8), "orange")
 
-    # --- GPS: consola grande a la izquierda del piloto (lado 1, delante-izquierda) con el mapa
+    # --- GPS: consola a la izquierda del piloto (lado 1, delante-izquierda), mismo perfil que las otras consolas
     k = 1
-    wk = 7.2
-    lb("gps_base_a", "body", k, -wk, FLOOR, -14.5, wk, FLOOR + 4.0, -12.5, "dark")
-    lb("gps_base_b", "body", k, -wk, FLOOR, -16.5, wk, FLOOR + 4.8, -14.5, "dark")
-    lb("gps_base_c", "body", k, -wk, FLOOR, WALL - 0.1, wk, FLOOR + 5.6, -16.5, "dark")
-    mp = dict(origin=(0, FLOOR + 4, -12.5), rot=(PAN, 0, 0))
-    lb("gps_panel", "body", k, -wk, FLOOR + 4, -18.4, wk, FLOOR + 5.5, -12.5, "pod", **mp)
-    lb("gps_labio", "body", k, -wk - 0.3, FLOOR + 4.0, -12.8, wk + 0.3, FLOOR + 4.9, -12.3, "dark")
+    wk = 5.6
+    for nm, y1, z0, z1 in (("a", 4.3, -16.0, -14.5), ("b", 4.9, -17.2, -16.0), ("c", 5.4, WALL - 0.1, -17.2)):
+        lb("gps_base_%s" % nm, "body", k, -wk, FLOOR, z0, wk, FLOOR + y1, z1, "dark")
+    mp = dict(origin=(0, FLOOR + 4, -14.5), rot=(PAN, 0, 0))
+    lb("gps_panel", "body", k, -wk, FLOOR + 4, -18.4, wk, FLOOR + 5.5, -14.5, "pod", **mp)
+    lb("gps_labio", "body", k, -wk - 0.3, FLOOR + 4.3, -14.8, wk + 0.3, FLOOR + 5.0, -14.3, "dark")
     # marco de la pantalla
-    lb("gps_marco_arriba", "body", k, -6.6, FLOOR + 5.5, -17.9, 6.6, FLOOR + 6.0, -17.4, "dark", **mp)
-    lb("gps_marco_abajo", "body", k, -6.6, FLOOR + 5.5, -13.4, 6.6, FLOOR + 6.0, -12.9, "dark", **mp)
-    lb("gps_marco_izq", "body", k, -6.6, FLOOR + 5.5, -17.4, -6.1, FLOOR + 6.0, -13.4, "dark", **mp)
-    lb("gps_marco_der", "body", k, 6.1, FLOOR + 5.5, -17.4, 6.6, FLOOR + 6.0, -13.4, "dark", **mp)
+    lb("gps_marco_arriba", "body", k, -4.9, FLOOR + 5.5, -17.9, 4.9, FLOOR + 5.9, -17.5, "dark", **mp)
+    lb("gps_marco_abajo", "body", k, -4.9, FLOOR + 5.5, -15.5, 4.9, FLOOR + 5.9, -15.1, "dark", **mp)
+    lb("gps_marco_izq", "body", k, -4.9, FLOOR + 5.5, -17.5, -4.5, FLOOR + 5.9, -15.5, "dark", **mp)
+    lb("gps_marco_der", "body", k, 4.5, FLOOR + 5.5, -17.5, 4.9, FLOOR + 5.9, -15.5, "dark", **mp)
     # el mapa: cuadrícula de teselas de terreno (agua, hierba, arena, roca)
-    cols_n, rows_n = 9, 3
-    tw = 12.2 / cols_n
-    th = 4.0 / rows_n
+    cols_n, rows_n = 8, 3
+    tw = 9.0 / cols_n
+    th = 2.0 / rows_n
     pal = ["map_water", "map_water2", "map_grass", "map_grass2", "map_sand", "map_rock"]
     for j in range(rows_n):
         for i in range(cols_n):
             v = math.sin(i * 0.95 + 0.6) + math.cos(j * 1.9 + i * 0.35) + 0.4 * math.sin(i * 2.3 + j)
             idx = 0 if v < -1.0 else 1 if v < -0.45 else 4 if v < -0.1 else 3 if v < 0.55 else 2 if v < 1.3 else 5
-            xa = -6.1 + i * tw
-            za = -17.4 + j * th
-            lb("mapa_tesela_%d_%d" % (j, i), "glow", k, xa, FLOOR + 5.5, za, xa + tw - 0.12, FLOOR + 5.9, za + th - 0.12, pal[idx], **mp)
-    # ruta (cian), posición de la nave (naranja) y botones del marco
-    lb("mapa_ruta_1", "glow", k, -4.6, FLOOR + 5.9, -15.9, 0.2, FLOOR + 6.1, -15.6, "cyan", **mp)
-    lb("mapa_ruta_2", "glow", k, -0.2, FLOOR + 5.9, -16.5, 0.2, FLOOR + 6.1, -15.6, "cyan", **mp)
-    lb("mapa_ruta_3", "glow", k, -0.2, FLOOR + 5.9, -16.5, 3.6, FLOOR + 6.1, -16.2, "cyan", **mp)
-    lb("mapa_nave", "glow", k, 3.3, FLOOR + 5.9, -16.8, 4.5, FLOOR + 6.4, -15.8, "orange", **mp)
-    for i, (xa, col) in enumerate(((-6.0, "red"), (-4.6, "orange"), (4.4, "cyan"), (5.8, "yellow"))):
-        lb("mapa_boton_%d" % i, "glow", k, xa, FLOOR + 5.5, -13.2, xa + 0.7, FLOOR + 5.9, -12.7, col, **mp)
+            xa = -4.5 + i * tw
+            za = -17.5 + j * th
+            lb("mapa_tesela_%d_%d" % (j, i), "glow", k, xa, FLOOR + 5.5, za, xa + tw - 0.1, FLOOR + 5.8, za + th - 0.1, pal[idx], **mp)
+    # ruta (cian), posición de la nave (naranja) y botones junto al borde
+    lb("mapa_ruta_1", "glow", k, -3.4, FLOOR + 5.8, -16.4, 0.2, FLOOR + 5.95, -16.2, "cyan", **mp)
+    lb("mapa_ruta_2", "glow", k, 0.0, FLOOR + 5.8, -17.0, 0.2, FLOOR + 5.95, -16.2, "cyan", **mp)
+    lb("mapa_ruta_3", "glow", k, 0.0, FLOOR + 5.8, -17.0, 2.6, FLOOR + 5.95, -16.8, "cyan", **mp)
+    lb("mapa_nave", "glow", k, 2.4, FLOOR + 5.8, -17.2, 3.4, FLOOR + 6.2, -16.4, "orange", **mp)
+    for i, (xa, col) in enumerate(((-4.4, "red"), (-3.2, "orange"), (2.6, "cyan"), (3.8, "yellow"))):
+        lb("mapa_boton_%d" % i, "glow", k, xa, FLOOR + 5.5, -14.9, xa + 0.8, FLOOR + 5.9, -14.5, col, **mp)
 
     # --- Reactor central (pared trasera, lado 4): núcleo brillante entre aletas
     lb("reactor_base", "body", 4, -6, FLOOR, -18.4, 6, FLOOR + 3, -13.5, "dark")

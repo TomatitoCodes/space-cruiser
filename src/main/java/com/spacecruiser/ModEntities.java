@@ -7,7 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
 
 import java.util.function.Supplier;
 
@@ -19,8 +18,6 @@ public final class ModEntities {
 	private static final float WIDTH = 4.6f;
 	private static final float HEIGHT = 3.2f;
 	private static final float PILOT_HEIGHT = 1.0f;
-	/** El asiento está 2 píxeles más atrás (+z = proa). */
-	private static final float PILOT_BACK = 2.0f / 16.0f;
 
 	public static final EntityType<SpaceCruiserEntity> SPACE_CRUISER =
 			register("space_cruiser", SCALE, () -> ModItems.SPACE_CRUISER);
@@ -35,7 +32,7 @@ public final class ModEntities {
 				EntityType.Builder.<SpaceCruiserEntity>create(
 								(type, world) -> new SpaceCruiserEntity(type, world, scale, item), SpawnGroup.MISC)
 						.dimensions(WIDTH * scale, HEIGHT * scale)
-						.passengerAttachments(new Vec3d(0.0, PILOT_HEIGHT * scale, -PILOT_BACK * scale))
+						.passengerAttachments(PILOT_HEIGHT * scale)
 						.maxTrackingRange(10)
 						.build(id)
 		);

@@ -52,7 +52,7 @@ public class SpaceCruiserEntity extends Entity {
 	private static final double GPS_FORWARD = 0.64;
 	private static final double GPS_LEFT = 0.64;
 	private static final double GPS_UP = 1.29;
-	private static final double GPS_RADIUS = 0.5;
+	private static final double GPS_RADIUS = 0.4;
 
 	private static final double ACCELERATION = 0.06;
 	private static final double VERTICAL_ACCELERATION = 0.04;
@@ -100,6 +100,21 @@ public class SpaceCruiserEntity extends Entity {
 
 	public void setBattery(float value) {
 		this.dataTracker.set(BATTERY, MathHelper.clamp(value, 0.0f, 10.0f));
+	}
+
+	/** El piloto va PILOT_BACK bloques (2 px) más atrás que el centro, donde está el asiento. */
+	@Override
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+		if (!this.hasPassenger(passenger)) {
+			return;
+		}
+		double s = this.modelScale;
+		double yawRad = Math.toRadians(this.getYaw());
+		double back = (2.0 / 16.0) * s;
+		positionUpdater.accept(passenger,
+				this.getX() + Math.sin(yawRad) * back,
+				this.getY() + 1.0 * s,
+				this.getZ() - Math.cos(yawRad) * back);
 	}
 
 	/** ¿Está el piloto mirando hacia la pantalla del GPS? (distancia del rayo de su mirada al centro de la pantalla) */
