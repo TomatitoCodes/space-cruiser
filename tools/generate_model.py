@@ -60,15 +60,15 @@ def build():
     R, yb, yt = 36.0, 12.0, 17.0
 
     # --- Casco
-    octagon("nucleo_inf", 18, 8, yb, "body", "dark")
-    octagon("borde", R, yb, yt, "body", "hull")
-    octagon("nucleo_sup", 25, yt, 19.5, "body", "hull")
+    # Platillo hueco: solo hay cáscara (pendientes, borde y fondo). El suelo de la cabina es
+    # la parte alta del fondo, a 14 px; el jugador va a 16 px (1 bloque), 2 px por encima.
+    octagon("fondo", 19.5, 8.5, 14, "body", "dark")
 
     # --- Medidas de la cúpula (apotema = distancia del centro a una cara del octógono)
     DOME = 19.0           # pared de cristal (antes 20: la cúpula es 2 px más pequeña de diámetro)
     SILL_OUT = 20.0       # borde opaco bajo el cristal
     SILL_IN = 18.5
-    FLOOR = 19.5          # suelo de la cabina (parte alta del casco)
+    FLOOR = 14.0          # suelo de la cabina (parte alta del fondo del platillo)
     SILL_TOP = 23.5       # el borde opaco es bajo para que el piloto se vea entero
     GLASS_TOP = 41.0
 
@@ -90,10 +90,6 @@ def build():
     dy_t = (y_in_top - yt) / n_top
     ang_t = math.atan2(dy_t, dr_t) * D
     len_t = math.hypot(dr_t, dy_t)
-    for i in range(n_top):
-        if yt + dy_t * i - THICK / math.cos(ang_t / D) - 0.05 > yt + 0.2:
-            octagon("relleno_sup_%d" % i, R - dr_t * i, yt, yt + dy_t * i - THICK / math.cos(ang_t / D) - 0.05,
-                    "body", "hull")
 
     # --- Pendiente inferior: 6 tramos por lado que bajan hacia el centro
     r_in_bot, y_in_bot = 18.0, 8.0
@@ -121,6 +117,15 @@ def build():
             w = (r_a - dr_b) * T - 0.05
             add("pend_inf_%d_%d" % (i, k), "body", (-w, y_a, -r_a), (w, y_a + THICK, -r_a + len_b), "dark", L,
                 origin=(0, y_a, -r_a), rot=(ang_b, 0, 0))
+        for i in range(n_top):
+            r_a = R - dr_t * i
+            y1 = yt + dy_t * i - THICK / math.cos(ang_t / D) - 0.15
+            add("soporte_sup_%d_%d" % (i, k), "body", (-r_a * T, y1 - 1.0, -r_a), (r_a * T, y1, -(r_a - dr_t)), "hull", L)
+        for i in range(n_bot):
+            r_a = R - dr_b * i
+            y0 = yb - dy_b * i + THICK / math.cos(ang_b / D) + 0.15
+            add("soporte_inf_%d_%d" % (i, k), "body", (-r_a * T, y0, -r_a), (r_a * T, y0 + 1.0, -(r_a - dr_b)), "dark", L)
+        add("borde_%d" % k, "body", (-(R - 1.0) * T, yb, -R), ((R - 1.0) * T, yt, -(R - 2.0)), "hull", L)
         add("franja_borde_%d" % k, "glow", (-3.5, yb + 1, -R - 0.6), (3.5, yt - 1, -R), "yellow", L)
         add("franja_pendiente_%d" % k, "glow", (-2.5, yt, -R), (2.5, yt + 0.6, -R + len_t * n_top), "yellow", L,
             origin=(0, yt, -R), rot=(-ang_t, 0, 0))
@@ -128,10 +133,10 @@ def build():
         for j in range(2):
             r_out = SILL_OUT + 2.0 - j
             w_flat = (r_out - 0.5) * T
-            add("anillo_plano_%d_%d" % (j, k), "body", (-w_flat, FLOOR, -r_out), (w_flat, y_in_top, -(r_out - 1.0)), "hull", L)
+            add("anillo_plano_%d_%d" % (j, k), "body", (-w_flat, y_in_top - 2.0, -r_out), (w_flat, y_in_top, -(r_out - 1.0)), "hull", L)
         # borde opaco bajo el cristal (hueco por dentro: no hay bloque macizo)
         w_sill = (SILL_OUT + SILL_IN) / 2 * T
-        add("borde_cupula_%d" % k, "body", (-w_sill, FLOOR, -SILL_OUT), (w_sill, SILL_TOP, -SILL_IN), "dark", L)
+        add("borde_cupula_%d" % k, "body", (-w_sill, yb, -SILL_OUT), (w_sill, SILL_TOP, -SILL_IN), "dark", L)
         w_g = DOME * T - 0.2
         add("cristal_pared_%d" % k, "dome", (-w_g, SILL_TOP, -DOME - 0.5), (w_g, GLASS_TOP, -DOME + 0.5), "glass", L)
         for i in range(3):
