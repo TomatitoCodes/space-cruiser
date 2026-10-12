@@ -64,58 +64,84 @@ def build():
     octagon("borde", R, yb, yt, "body", "hull")
     octagon("nucleo_sup", 25, yt, 19.5, "body", "hull")
 
-    # --- Cúpula: base, tapa y postes
-    octagon("base_cupula", 21, 22, 27, "body", "dark")
+    # --- Medidas de la cúpula (apotema = distancia del centro a una cara del octógono)
+    DOME = 19.0           # pared de cristal (antes 20: la cúpula es 2 px más pequeña de diámetro)
+    SILL_OUT = 20.0       # borde opaco bajo el cristal
+    SILL_IN = 18.5
+    FLOOR = 19.5          # suelo de la cabina (parte alta del casco)
+    SILL_TOP = 23.5       # el borde opaco es bajo para que el piloto se vea entero
+    GLASS_TOP = 41.0
+
+    # --- Cúpula: tapa y postes (el borde opaco va por lados, más abajo)
     octagon("tapa", 9.8, 48.5, 50, "frame", "frame")
-    rv = 20 / math.cos(math.pi / 8)
+    rv = DOME / math.cos(math.pi / 8)
     for k in range(8):
         th = (22.5 + 45 * k) / D
         x, z = rv * math.sin(th), -rv * math.cos(th)
-        add("poste_%d" % k, "frame", (x - 0.8, 27, z - 0.8), (x + 0.8, 41.5, z + 0.8), "frame")
+        add("poste_%d" % k, "frame", (x - 0.8, SILL_TOP, z - 0.8), (x + 0.8, GLASS_TOP + 0.5, z + 0.8), "frame")
 
-    # --- Pendientes del casco, franjas y cristal: un grupo por lado del octógono
-    aS = math.atan2(5, R - 21) * D
-    h = math.hypot(R - 21, 5) / 2
-    aL = math.atan2(4, R - 18) * D
-    hL = math.hypot(R - 18, 4) / 2
-    aR = math.atan2(8, 10) * D
-    seg_len = math.hypot(10, 8) / 3
-    run_sa, rise_sa = h * math.cos(aS / D), h * math.sin(aS / D)
-    run_la, drop_la = hL * math.cos(aL / D), hL * math.sin(aL / D)
-    w_sa = (R - run_sa / 2) * T
-    w_sb = (R - run_sa - run_sa / 2) * T
-    w_la = (R - run_la / 2) * T
-    w_lb = (R - run_la - run_la / 2) * T
-    roof_w = [6.6, 5.2, 3.9]
+    # --- Pendiente superior: 6 tramos por lado. Cada tramo es un panel con la anchura del
+    #     extremo interior (sin solaparse con los vecinos) y detrás hay placas octogonales
+    #     del mismo color que tapan los huecos de las esquinas.
+    THICK = 2.0
+    r_in_top, y_in_top = SILL_OUT, 22.0
+    n_top = 6
+    dr_t = (R - r_in_top) / n_top
+    dy_t = (y_in_top - yt) / n_top
+    ang_t = math.atan2(dy_t, dr_t) * D
+    len_t = math.hypot(dr_t, dy_t)
+    for i in range(n_top):
+        if yt + dy_t * i - THICK / math.cos(ang_t / D) - 0.05 > yt + 0.2:
+            octagon("relleno_sup_%d" % i, R - dr_t * i, yt, yt + dy_t * i - THICK / math.cos(ang_t / D) - 0.05,
+                    "body", "hull")
+
+    # --- Pendiente inferior: 6 tramos por lado que bajan hacia el centro
+    r_in_bot, y_in_bot = 18.0, 8.0
+    n_bot = 6
+    dr_b = (R - r_in_bot) / n_bot
+    dy_b = (yb - y_in_bot) / n_bot
+    ang_b = math.atan2(dy_b, dr_b) * D
+    len_b = math.hypot(dr_b, dy_b)
+
+    # --- Cristal: techo en 3 tramos que se estrechan y no se solapan
+    aR = math.atan2(8, DOME - 10) * D
+    seg_len = math.hypot(DOME - 10, 8) / 3
 
     for k in range(8):
         L = k
-        add("panel_sup_A_%d" % k, "body", (-w_sa, yt - 3, -R), (w_sa, yt, -R + h), "hull", L,
-            origin=(0, yt, -R), rot=(-aS, 0, 0))
-        add("panel_sup_B_%d" % k, "body",
-            (-w_sb, yt + rise_sa - 3, -(R - run_sa)), (w_sb, yt + rise_sa, -(R - run_sa) + h), "hull", L,
-            origin=(0, yt + rise_sa, -(R - run_sa)), rot=(-aS, 0, 0))
-        add("panel_inf_A_%d" % k, "body", (-w_la, yb, -R), (w_la, yb + 3, -R + hL), "dark", L,
-            origin=(0, yb, -R), rot=(aL, 0, 0))
-        add("panel_inf_B_%d" % k, "body",
-            (-w_lb, yb - drop_la, -(R - run_la)), (w_lb, yb - drop_la + 3, -(R - run_la) + hL), "dark", L,
-            origin=(0, yb - drop_la, -(R - run_la)), rot=(aL, 0, 0))
+        for i in range(n_top):
+            r_a = R - dr_t * i
+            y_a = yt + dy_t * i
+            w = (r_a - dr_t) * T - 0.05
+            add("pend_sup_%d_%d" % (i, k), "body", (-w, y_a - THICK, -r_a), (w, y_a, -r_a + len_t), "hull", L,
+                origin=(0, y_a, -r_a), rot=(-ang_t, 0, 0))
+        for i in range(n_bot):
+            r_a = R - dr_b * i
+            y_a = yb - dy_b * i
+            w = (r_a - dr_b) * T - 0.05
+            add("pend_inf_%d_%d" % (i, k), "body", (-w, y_a, -r_a), (w, y_a + THICK, -r_a + len_b), "dark", L,
+                origin=(0, y_a, -r_a), rot=(ang_b, 0, 0))
         add("franja_borde_%d" % k, "glow", (-3.5, yb + 1, -R - 0.6), (3.5, yt - 1, -R), "yellow", L)
-        add("franja_pendiente_%d" % k, "glow", (-2.5, yt, -R), (2.5, yt + 0.6, -R + 2 * h), "yellow", L,
-            origin=(0, yt, -R), rot=(-aS, 0, 0))
-        add("cristal_pared_%d" % k, "dome", (-8.1, 27, -20.5), (8.1, 41, -19.5), "glass", L)
+        add("franja_pendiente_%d" % k, "glow", (-2.5, yt, -R), (2.5, yt + 0.6, -R + len_t * n_top), "yellow", L,
+            origin=(0, yt, -R), rot=(-ang_t, 0, 0))
+        # borde opaco bajo el cristal (hueco por dentro: no hay bloque macizo)
+        w_sill = (SILL_OUT + SILL_IN) / 2 * T
+        add("borde_cupula_%d" % k, "body", (-w_sill, FLOOR, -SILL_OUT), (w_sill, SILL_TOP, -SILL_IN), "dark", L)
+        w_g = DOME * T - 0.2
+        add("cristal_pared_%d" % k, "dome", (-w_g, SILL_TOP, -DOME - 0.5), (w_g, GLASS_TOP, -DOME + 0.5), "glass", L)
         for i in range(3):
-            r = 20 - 10 / 3 * i
-            y = 41 + 8 / 3 * i
-            add("cristal_techo_%d_%d" % (i, k), "dome", (-roof_w[i], y - 1.5, -r),
-                (roof_w[i], y, -r + seg_len), "glass", L, origin=(0, y, -r), rot=(-aR, 0, 0))
+            r = DOME - (DOME - 10) / 3 * i
+            y = GLASS_TOP + 8 / 3 * i
+            wr = (r - (DOME - 10) / 3) * T - 0.25
+            add("cristal_techo_%d_%d" % (i, k), "dome", (-wr, y - 1.5, -r), (wr, y, -r + seg_len), "glass", L,
+                origin=(0, y, -r), rot=(-aR, 0, 0))
 
-    # --- Cabina
-    add("asiento_base", "body", (-6, 27, -4), (6, 31, 8), "seat")
-    add("asiento_respaldo", "body", (-7, 31, 6), (7, 40, 9), "seat")
-    add("consola", "body", (-9, 27, -16), (9, 31, -10), "dark")
-    add("columna_volante", "body", (-1.5, 31, -14), (1.5, 32, -12), "dark")
-    add("volante", "body", (-5, 32, -14), (5, 33.5, -11), "dark")
+    # --- Cabina hueca: asiento bajo, respaldo y consola delante, fuera del alcance de las piernas
+    add("asiento_base", "body", (-5, FLOOR, -1), (5, 23, 5), "seat")
+    add("asiento_respaldo", "body", (-5, 23, 3), (5, 36, 5), "seat")
+    add("consola", "body", (-9, FLOOR, -18), (9, 26, -12), "dark")
+    add("columna_volante", "body", (-1.5, 26, -17), (1.5, 28, -15), "dark")
+    add("volante", "body", (-5, 28, -18), (5, 29.5, -13), "dark")
 
     # --- Propulsores: cubos de basura tumbados, cerrados delante y abiertos detrás (fuego)
     for n, s in (("izq", -1), ("der", 1)):

@@ -13,7 +13,7 @@ public final class ModEntities {
 			Identifier.of(SpaceCruiserMod.MOD_ID, "space_cruiser"),
 			EntityType.Builder.create(SpaceCruiserEntity::new, SpawnGroup.MISC)
 					.dimensions(4.6f, 3.2f)
-					.passengerAttachments(1.4f)
+					.passengerAttachments(0.7f)
 					.maxTrackingRange(10)
 					.build("space_cruiser")
 	);
