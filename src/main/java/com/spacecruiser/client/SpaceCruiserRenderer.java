@@ -34,7 +34,7 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 		this.glow = root.getChild("glow");
 		this.frame = root.getChild("frame");
 		this.dome = root.getChild("dome");
-		this.shadowRadius = 1.4f;
+		this.shadowRadius = 2.3f;
 	}
 
 	@Override
@@ -62,10 +62,10 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 		// Inclinación según el movimiento (morro abajo al avanzar, alabeo al desplazarse).
 		float pitch = MathHelper.lerp(tickDelta, entity.prevLeanPitch, entity.leanPitch);
 		float roll = MathHelper.lerp(tickDelta, entity.prevLeanRoll, entity.leanRoll);
-		matrices.translate(0.0, 0.6, 0.0);
+		matrices.translate(0.0, 1.2, 0.0);
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(pitch));
 		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
-		matrices.translate(0.0, -0.6, 0.0);
+		matrices.translate(0.0, -1.2, 0.0);
 
 		// Convención de modelos de entidad: eje Y invertido y origen a 24 px del suelo.
 		matrices.scale(-1.0f, -1.0f, 1.0f);

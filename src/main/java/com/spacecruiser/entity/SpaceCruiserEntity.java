@@ -233,9 +233,10 @@ public class SpaceCruiserEntity extends Entity {
 		double sin = Math.sin(yawRad);
 		double cos = Math.cos(yawRad);
 		for (int sign = -1; sign <= 1; sign += 2) {
-			double px = this.getX() + cos * 1.35 * sign + (-sin) * -0.4;
-			double pz = this.getZ() + sin * 1.35 * sign + cos * -0.4;
-			this.getWorld().addParticle(ParticleTypes.FLAME, px, this.getY() + 0.65, pz, -dx * 0.3, 0.0, -dz * 0.3);
+			// Boca trasera de los cubos de basura: a ~1,9 bloques del centro, ~0,75 por detrás y a ~1,95 de altura.
+			double px = this.getX() + cos * 1.9 * sign + (-sin) * -0.8;
+			double pz = this.getZ() + sin * 1.9 * sign + cos * -0.8;
+			this.getWorld().addParticle(ParticleTypes.FLAME, px, this.getY() + 1.95, pz, -dx * 0.3, 0.0, -dz * 0.3);
 		}
 	}
 }
