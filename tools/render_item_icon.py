@@ -5,7 +5,11 @@ Usa los mismos cubos que tools/generate_model.py (con sus rotaciones y grupos), 
 icono siempre coincide con el modelo. Vista isométrica 3/4 con el morro hacia la cámara.
 
 Uso (desde la raíz del repositorio):
-    python3 tools/render_item_icon.py [tamaño_icono=64] [directorio_preview]
+    python3 tools/render_item_icon.py [tamaño_icono=256] [directorio_preview]
+
+Estilo por defecto: render suave (el que se usa). Variante pixel art de 64x64 con contorno:
+    ICON_STYLE=pixel ICON_AZ=-12 ICON_EL=34 ICON_GLASS=0.72 ICON_COLORS=22 ICON_SPEC=0.6 \
+    ICON_SAT=1.3 ICON_GLASS_RGB=170,222,252 python3 tools/render_item_icon.py 64
 """
 import math
 import os
@@ -21,15 +25,16 @@ import generate_model as gm  # noqa: E402
 ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, "src/main/resources/assets/spacecruiser/textures/item/space_cruiser.png")
 
-AZIMUTH = float(os.environ.get("ICON_AZ", -12.0))     # negativo = el morro apunta hacia la izquierda
-ELEVATION = float(os.environ.get("ICON_EL", 34.0))    # grados de inclinación de la cámara
-PALETTE_COLORS = int(os.environ.get("ICON_COLORS", 22))  # 0 = sin reducir la paleta
-SPEC = float(os.environ.get("ICON_SPEC", 0.6))        # brillo especular en el cristal (0..1)
-SATURATION = float(os.environ.get("ICON_SAT", 1.3))   # saturación final del icono
-GLASS_COLOR = (170, 222, 252)
+AZIMUTH = float(os.environ.get("ICON_AZ", -38.0))     # negativo = el morro apunta hacia la izquierda
+ELEVATION = float(os.environ.get("ICON_EL", 30.0))    # grados de inclinación de la cámara
+PALETTE_COLORS = int(os.environ.get("ICON_COLORS", 0))  # 0 = sin reducir la paleta (solo estilo pixel)
+SPEC = float(os.environ.get("ICON_SPEC", 0.0))        # brillo especular en el cristal (0..1)
+SATURATION = float(os.environ.get("ICON_SAT", 1.0))   # saturación final del icono
+GLASS_COLOR = tuple(int(v) for v in os.environ.get("ICON_GLASS_RGB", "160,207,235").split(","))
+STYLE = os.environ.get("ICON_STYLE", "smooth")  # smooth | pixel
 SUPER = 1024        # lado del render antes de reducir
 OUTLINE = (28, 29, 34)
-GLASS_ALPHA = float(os.environ.get("ICON_GLASS", 0.72))
+GLASS_ALPHA = float(os.environ.get("ICON_GLASS", 0.26))
 
 
 def rx(p, a):
@@ -98,7 +103,7 @@ def cube_faces(c):
 
 
 def main():
-    size = int(sys.argv[1]) if len(sys.argv) > 1 else 64
+    size = int(sys.argv[1]) if len(sys.argv) > 1 else (256 if STYLE == "smooth" else 64)
     prev = sys.argv[2] if len(sys.argv) > 2 else None
 
     gm.build()
@@ -204,6 +209,18 @@ def main():
 
     img[:, :, 3] *= 255.0   # el alfa se acumuló como 0..1
     big = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGBA")
+
+    if STYLE == "smooth":
+        icon = big.resize((size, size), Image.LANCZOS)
+        icon.save(OUT)
+        print("Icono escrito:", OUT, icon.size)
+        if prev:
+            os.makedirs(prev, exist_ok=True)
+            big.save(os.path.join(prev, "nave_render_grande.png"))
+            bg = Image.new("RGBA", icon.size, (139, 139, 139, 255))
+            bg.alpha_composite(icon)
+            bg.convert("RGB").save(os.path.join(prev, "nave_icono_vista.png"))
+        return
 
     # Reducir a tamaño de icono (promedio por bloque) y recortar a píxel limpio.
     small = big.resize((size, size), Image.BOX)
