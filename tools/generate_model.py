@@ -77,18 +77,18 @@ def build():
     SILL_IN = 18.5
     FLOOR = 14.0          # suelo de la cabina (parte alta del fondo del platillo)
     SILL_TOP = 23.5       # el borde opaco es bajo para que el piloto se vea entero
-    GLASS_TOP = 40.0      # el cristal empieza a curvarse 1 px antes (antes 41)
+    GLASS_TOP = 39.0      # el cristal empieza a curvarse 1 px antes que en la v1.5 (40)
     # Perfil de la cúpula (apotema, altura): pared vertical y tres tramos cada vez más suaves
-    PROFILE = [(19.0, 40.0), (16.6, 42.8), (13.0, 45.0), (9.8, 46.5)]
+    PROFILE = [(19.0, 39.0), (16.6, 41.8), (13.0, 44.0), (9.8, 45.5)]
 
     # --- Cúpula: tapa y postes (el borde opaco va por lados, más abajo)
     # techo sólido integrado: su cara superior queda a ras del cristal, no un bloque por encima
     octagon("tapa", PROFILE[-1][0], PROFILE[-1][1] - 1.5, PROFILE[-1][1], "frame", "frame")
-    rv = DOME / math.cos(math.pi / 8)
+    rv = (DOME - 0.2) / math.cos(math.pi / 8)
     for k in range(8):
         th = (22.5 + 45 * k) / D
         x, z = rv * math.sin(th), -rv * math.cos(th)
-        add("poste_%d" % k, "frame", (x - 0.8, SILL_TOP, z - 0.8), (x + 0.8, GLASS_TOP + 0.5, z + 0.8), "frame")
+        add("poste_%d" % k, "frame", (x - 0.5, SILL_TOP, z - 0.5), (x + 0.5, GLASS_TOP + 0.3, z + 0.5), "frame")
 
     # --- Pendiente superior: 6 tramos por lado. Cada tramo es un panel con la anchura del
     #     extremo interior (sin solaparse con los vecinos) y detrás hay placas octogonales
@@ -171,7 +171,7 @@ def build():
             rv_a, rv_b = r_a / math.cos(math.pi / 8), r_b / math.cos(math.pi / 8)
             ang = math.atan2(y_b - y_a, rv_a - rv_b) * D
             ln = math.hypot(rv_a - rv_b, y_b - y_a)
-            add("nervio_%d_%d" % (i, k), "frame", (-0.7, y_a - 0.9, -rv_a), (0.7, y_a + 0.7, -rv_a + ln), "frame", 8 + k,
+            add("nervio_%d_%d" % (i, k), "frame", (-0.5, y_a - 0.9, -rv_a), (0.5, y_a + 0.25, -rv_a + ln), "frame", 8 + k,
                 origin=(0, y_a, -rv_a), rot=(-ang, 0, 0))
     # piloto de luz embutido en el techo
     add("baliza", "glow", (-2, PROFILE[-1][1], -2), (2, PROFILE[-1][1] + 0.3, 2), "yellow")
@@ -236,13 +236,6 @@ def build():
             box("costilla_abajo_%d" % j, fx(xo, xo + 1), 21.6, 22, -7.5, 9, "body", "bin_dark")
         box("costilla_ext_1", fx(36, 36.4), 24, 25, -7.5, 9, "body", "bin_dark")
         box("costilla_ext_2", fx(36, 36.4), 33, 34, -7.5, 9, "body", "bin_dark")
-        # etiqueta de reciclaje en la cara exterior
-        box("etiqueta", fx(36, 36.3), 26.5, 31.5, -4, 2, "body", "beige")
-        box("etiqueta_arriba", fx(36.3, 36.6), 30.4, 31, -3.4, 1.4, "body", "moss")
-        box("etiqueta_abajo", fx(36.3, 36.6), 27, 27.6, -3.4, 1.4, "body", "moss")
-        box("etiqueta_izq", fx(36.3, 36.6), 27, 31, -3.4, -2.8, "body", "moss")
-        box("etiqueta_der", fx(36.3, 36.6), 27, 31, 0.8, 1.4, "body", "moss")
-        box("etiqueta_centro", fx(36.3, 36.6), 28.6, 29.4, -1.2, -0.4, "body", "bin_dark")
         # correas alrededor del cuerpo y cunas hundidas en el casco
         for z0 in (-5.8, 4.2):
             z1 = z0 + 1.6
