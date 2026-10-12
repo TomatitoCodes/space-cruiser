@@ -1,7 +1,7 @@
 package com.spacecruiser.item;
 
-import com.spacecruiser.ModEntities;
 import com.spacecruiser.entity.SpaceCruiserEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
@@ -9,9 +9,14 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.function.Supplier;
+
 public class SpaceCruiserItem extends Item {
-	public SpaceCruiserItem(Settings settings) {
+	private final Supplier<EntityType<SpaceCruiserEntity>> entityType;
+
+	public SpaceCruiserItem(Settings settings, Supplier<EntityType<SpaceCruiserEntity>> entityType) {
 		super(settings);
+		this.entityType = entityType;
 	}
 
 	@Override
@@ -22,7 +27,7 @@ public class SpaceCruiserItem extends Item {
 		}
 
 		BlockPos pos = context.getBlockPos().offset(context.getSide());
-		SpaceCruiserEntity ship = ModEntities.SPACE_CRUISER.create(serverWorld);
+		SpaceCruiserEntity ship = this.entityType.get().create(serverWorld);
 		if (ship == null) {
 			return ActionResult.FAIL;
 		}

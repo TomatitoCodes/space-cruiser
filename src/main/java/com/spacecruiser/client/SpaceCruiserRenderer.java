@@ -27,14 +27,14 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 	private final ModelPart frame;
 	private final ModelPart dome;
 
-	public SpaceCruiserRenderer(EntityRendererFactory.Context context) {
+	public SpaceCruiserRenderer(EntityRendererFactory.Context context, float scale) {
 		super(context);
 		ModelPart root = context.getPart(SpaceCruiserClient.MODEL_LAYER);
 		this.body = root.getChild("body");
 		this.glow = root.getChild("glow");
 		this.frame = root.getChild("frame");
 		this.dome = root.getChild("dome");
-		this.shadowRadius = 2.3f;
+		this.shadowRadius = 2.3f * scale;
 	}
 
 	@Override
@@ -55,6 +55,9 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 		// Flotación suave.
 		float bob = MathHelper.sin((entity.age + tickDelta) * 0.12f) * 0.03f;
 		matrices.translate(0.0, 0.06 + bob, 0.0);
+
+		// Escala de la versión (se aplica desde el suelo, bajo el centro de la nave).
+		matrices.scale(entity.modelScale, entity.modelScale, entity.modelScale);
 
 		// Orientación: tras esta rotación, +Z local es el morro de la nave.
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));

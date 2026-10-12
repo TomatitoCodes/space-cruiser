@@ -1,6 +1,5 @@
 package com.spacecruiser.entity;
 
-import com.spacecruiser.ModItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -8,6 +7,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -19,6 +19,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Nave pilotable. Funciona como un barco: el cliente del piloto calcula el movimiento
@@ -51,8 +52,14 @@ public class SpaceCruiserEntity extends Entity {
 	private double lerpZ;
 	private float lerpYaw;
 
-	public SpaceCruiserEntity(EntityType<?> type, World world) {
+	/** Escala con la que se dibuja la nave (1 = tamaño original). La usa el renderer y las llamas. */
+	public final float modelScale;
+	private final Supplier<Item> item;
+
+	public SpaceCruiserEntity(EntityType<?> type, World world, float modelScale, Supplier<Item> item) {
 		super(type, world);
+		this.modelScale = modelScale;
+		this.item = item;
 		this.setNoGravity(true);
 	}
 
@@ -94,7 +101,7 @@ public class SpaceCruiserEntity extends Entity {
 
 	@Override
 	public ItemStack getPickBlockStack() {
-		return new ItemStack(ModItems.SPACE_CRUISER);
+		return new ItemStack(this.item.get());
 	}
 
 	/** Volar bajo no debe hacer daño por caída ni a la nave ni al piloto. */
@@ -114,7 +121,7 @@ public class SpaceCruiserEntity extends Entity {
 
 		boolean creativeAttacker = source.getAttacker() instanceof PlayerEntity player && player.isCreative();
 		if (!creativeAttacker && this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			this.dropStack(new ItemStack(ModItems.SPACE_CRUISER));
+			this.dropStack(new ItemStack(this.item.get()));
 		}
 		this.discard();
 		return true;
@@ -234,9 +241,10 @@ public class SpaceCruiserEntity extends Entity {
 		double cos = Math.cos(yawRad);
 		for (int sign = -1; sign <= 1; sign += 2) {
 			// Boca trasera de los cubos de basura: a ~1,9 bloques del centro, ~0,75 por detrás y a ~1,95 de altura.
-			double px = this.getX() + cos * 1.9 * sign + (-sin) * -0.8;
-			double pz = this.getZ() + sin * 1.9 * sign + cos * -0.8;
-			this.getWorld().addParticle(ParticleTypes.FLAME, px, this.getY() + 1.95, pz, -dx * 0.3, 0.0, -dz * 0.3);
+			double s = this.modelScale;
+			double px = this.getX() + cos * 1.9 * s * sign + (-sin) * -0.8 * s;
+			double pz = this.getZ() + sin * 1.9 * s * sign + cos * -0.8 * s;
+			this.getWorld().addParticle(ParticleTypes.FLAME, px, this.getY() + 1.95 * s, pz, -dx * 0.3, 0.0, -dz * 0.3);
 		}
 	}
 }
