@@ -141,12 +141,8 @@ def build():
             add("cristal_techo_%d_%d" % (i, k), "dome", (-wr, y - 1.5, -r), (wr, y, -r + seg_len), "glass", L,
                 origin=(0, y, -r), rot=(-aR, 0, 0))
 
-    # --- Cabina hueca: asiento bajo, respaldo y consola delante, fuera del alcance de las piernas
-    add("asiento_base", "body", (-5, FLOOR, -1), (5, 23, 5), "seat")
-    add("asiento_respaldo", "body", (-5, 23, 3), (5, 36, 5), "seat")
-    add("consola", "body", (-9, FLOOR, -18), (9, 26, -12), "dark")
-    add("columna_volante", "body", (-1.5, 26, -17), (1.5, 28, -15), "dark")
-    add("volante", "body", (-5, 28, -18), (5, 29.5, -13), "dark")
+    # --- Cabina hueca: solo un cojín de 2 px sobre el suelo; todo lo demás, vacío para el piloto
+    add("asiento_base", "body", (-5, FLOOR, -2), (5, FLOOR + 2, 4), "seat")
 
     # --- Propulsores: cubos de basura tumbados, cerrados delante y abiertos detrás (fuego)
     for n, s in (("izq", -1), ("der", 1)):
