@@ -84,7 +84,7 @@ def build():
     #     extremo interior (sin solaparse con los vecinos) y detrás hay placas octogonales
     #     del mismo color que tapan los huecos de las esquinas.
     THICK = 2.0
-    r_in_top, y_in_top = SILL_OUT, 22.0
+    r_in_top, y_in_top = SILL_OUT + 1.0, 22.0   # la pendiente acaba 1 px antes: ahí empieza el anillo plano
     n_top = 6
     dr_t = (R - r_in_top) / n_top
     dy_t = (y_in_top - yt) / n_top
@@ -124,6 +124,9 @@ def build():
         add("franja_borde_%d" % k, "glow", (-3.5, yb + 1, -R - 0.6), (3.5, yt - 1, -R), "yellow", L)
         add("franja_pendiente_%d" % k, "glow", (-2.5, yt, -R), (2.5, yt + 0.6, -R + len_t * n_top), "yellow", L,
             origin=(0, yt, -R), rot=(-ang_t, 0, 0))
+        # anillo plano de 1 px alrededor de la cúpula, a la altura donde acaba la pendiente
+        w_flat = (SILL_OUT + 0.5) * T
+        add("anillo_plano_%d" % k, "body", (-w_flat, FLOOR, -(SILL_OUT + 1.0)), (w_flat, y_in_top, -SILL_OUT), "hull", L)
         # borde opaco bajo el cristal (hueco por dentro: no hay bloque macizo)
         w_sill = (SILL_OUT + SILL_IN) / 2 * T
         add("borde_cupula_%d" % k, "body", (-w_sill, FLOOR, -SILL_OUT), (w_sill, SILL_TOP, -SILL_IN), "dark", L)
