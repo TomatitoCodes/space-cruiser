@@ -40,6 +40,9 @@ COLORS = {
     "seat": (112, 78, 52),
     "glass": (160, 207, 235),
     "lamp": (255, 243, 200),
+    "lamp_body": (96, 100, 52),
+    "lamp_dark": (68, 72, 38),
+    "tape": (136, 140, 146),
     "potion": (70, 225, 95),
     "potion2": (45, 190, 80),
     "cork": (150, 108, 68),
@@ -57,7 +60,7 @@ COLORS = {
     "map_sand": (224, 204, 128),
     "map_rock": (128, 128, 134),
 }
-NOISE = {"hull": 6, "dark": 5, "pod": 4, "seat": 6, "bin": 6, "bin_dark": 5, "bin_lid": 6, "beige": 4, "moss": 5}
+NOISE = {"lamp_body": 4, "lamp_dark": 4, "tape": 4, "hull": 6, "dark": 5, "pod": 4, "seat": 6, "bin": 6, "bin_dark": 5, "bin_lid": 6, "beige": 4, "moss": 5}
 
 cubes = []  # cada cubo: dict
 
@@ -128,7 +131,7 @@ def build():
         for i in range(n_top):
             r_a = R0 - dr_t * i
             y_a = yt + dy_t * i
-            w = (r_a - dr_t / 2) * T          # anchura media del tramo: huecos y solapes de solo ~0,3 px en la arista
+            w = (r_a - dr_t / 2) * T + 0.25   # anchura media del tramo: huecos y solapes de solo ~0,3 px en la arista
             add("pend_sup_%d_%d" % (i, k), "body", (-w, y_a - THICK, -r_a), (w, y_a, -r_a + len_t), "hull", L,
                 origin=(0, y_a, -r_a), rot=(-ang_t, 0, 0))
         for i in range(n_bot):
@@ -385,15 +388,24 @@ def build():
         box("fuego_2", fx(31.5, 34.5), 25.5, 32.5, 6, 13.5, "glow", "orange")
         box("fuego_nucleo", fx(28.5, 31.5), 27, 31, 6, 11, "glow", "yellow")
 
-    # --- Dos focos delanteros (lados 1 y 7, a cada lado del morro): soporte, carcasa, visera y lente luminosa
-    for L in (1, 7):
-        add("foco_%d_base" % L, "body", (-2.3, 16.4, -R0 - 0.2), (2.3, 17.4, -R0 + 4.4), "dark", L)
-        add("foco_%d_carcasa" % L, "body", (-1.9, 17.4, -R0 - 1.2), (1.9, 20.6, -R0 + 3.8), "dark", L)
-        add("foco_%d_visera" % L, "body", (-2.2, 20.6, -R0 - 1.8), (2.2, 21.2, -R0 + 3.8), "pod", L)
-        add("foco_%d_brazo_izq" % L, "body", (-2.6, 17.4, -R0 + 0.3), (-1.9, 20.2, -R0 + 3.0), "pod", L)
-        add("foco_%d_brazo_der" % L, "body", (1.9, 17.4, -R0 + 0.3), (2.6, 20.2, -R0 + 3.0), "pod", L)
-        add("foco_%d_aro" % L, "body", (-1.5, 17.8, -R0 - 1.7), (1.5, 20.2, -R0 - 1.2), "pod", L)
-        add("foco_%d_lente" % L, "glow", (-1.1, 18.2, -R0 - 1.95), (1.1, 19.8, -R0 - 1.7), "lamp", L)
+    # --- Dos linternas pegadas con cinta americana, juntas en el centro del borde de la placa delantera (lado 0),
+    # a cada lado de la franja amarilla y apuntando hacia delante (-Z)
+    for n, sx in (("izq", -1), ("der", 1)):
+        cx = sx * 5.2
+
+        def lin(name, hx, y0, y1, z0, z1, slot, group="body", dx=0.0, n=n, cx=cx):
+            add("linterna_%s_%s" % (n, name), group, (cx + dx - hx, y0, -R0 + z0), (cx + dx + hx, y1, -R0 + z1), slot, 0)
+
+        lin("cuerpo", 1.4, 16.9, 19.5, 0.6, 5.4, "lamp_body")
+        lin("cabeza", 1.9, 16.7, 20.1, -0.6, 1.4, "lamp_dark")
+        lin("aro", 1.6, 17.0, 19.8, -0.9, -0.6, "chrome")
+        lin("lente", 1.25, 17.4, 19.4, -1.15, -0.85, "lamp", "glow")
+        lin("mango", 0.55, 19.5, 20.5, 1.8, 4.8, "dark")
+        lin("boton", 0.4, 20.5, 20.9, 2.6, 3.4, "red")
+        lin("cinta_1", 1.55, 16.8, 19.7, 2.7, 3.7, "tape")
+        lin("cinta_2", 1.55, 16.8, 19.7, 4.4, 5.1, "tape")
+        lin("cinta_ala_a", 1.0, 17.1, 17.7, 2.7, 3.7, "tape", dx=-2.55)
+        lin("cinta_ala_b", 1.0, 17.1, 17.7, 2.7, 3.7, "tape", dx=2.55)
 
     # --- Patas: tren de aterrizaje de nave espacial (anclaje al casco, manguito, pistón, aletas y plato de apoyo)
     for i, (sx, sz) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
