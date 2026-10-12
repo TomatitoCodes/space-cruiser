@@ -38,6 +38,8 @@ COLORS = {
     "frame": (153, 203, 235),
     "seat": (112, 78, 52),
     "glass": (160, 207, 235),
+    "cyan": (110, 230, 255),
+    "red": (255, 90, 70),
 }
 NOISE = {"hull": 6, "dark": 5, "pod": 4, "seat": 6}
 
@@ -70,7 +72,9 @@ def build():
     SILL_IN = 18.5
     FLOOR = 14.0          # suelo de la cabina (parte alta del fondo del platillo)
     SILL_TOP = 23.5       # el borde opaco es bajo para que el piloto se vea entero
-    GLASS_TOP = 41.0
+    GLASS_TOP = 40.0      # el cristal empieza a curvarse 1 px antes (antes 41)
+    # Perfil de la cúpula (apotema, altura): pared vertical y tres tramos cada vez más suaves
+    PROFILE = [(19.0, 40.0), (16.6, 43.6), (13.0, 46.6), (9.8, 48.5)]
 
     # --- Cúpula: tapa y postes (el borde opaco va por lados, más abajo)
     octagon("tapa", 9.8, 48.5, 50, "frame", "frame")
@@ -85,50 +89,53 @@ def build():
     #     del mismo color que tapan los huecos de las esquinas.
     THICK = 2.0
     r_in_top, y_in_top = SILL_OUT + 2.0, 22.0   # la pendiente acaba 2 px antes: ahí empieza el anillo plano
-    n_top = 6
-    dr_t = (R - r_in_top) / n_top
+    R0 = R - 0.4          # las pendientes arrancan dentro del muro del borde: así no comparten cara con él
+    n_top = 8
+    dr_t = (R0 - r_in_top) / n_top
     dy_t = (y_in_top - yt) / n_top
     ang_t = math.atan2(dy_t, dr_t) * D
     len_t = math.hypot(dr_t, dy_t)
 
     # --- Pendiente inferior: 6 tramos por lado que bajan hacia el centro
     r_in_bot, y_in_bot = 18.0, 8.0
-    n_bot = 6
-    dr_b = (R - r_in_bot) / n_bot
+    n_bot = 8
+    dr_b = (R0 - r_in_bot) / n_bot
     dy_b = (yb - y_in_bot) / n_bot
     ang_b = math.atan2(dy_b, dr_b) * D
     len_b = math.hypot(dr_b, dy_b)
 
     # --- Cristal: techo en 3 tramos que se estrechan y no se solapan
-    aR = math.atan2(8, DOME - 10) * D
-    seg_len = math.hypot(DOME - 10, 8) / 3
 
     for k in range(8):
         L = k
         for i in range(n_top):
-            r_a = R - dr_t * i
+            r_a = R0 - dr_t * i
             y_a = yt + dy_t * i
-            w = (r_a - dr_t) * T - 0.05
+            w = (r_a - dr_t / 2) * T          # anchura media del tramo: huecos y solapes de solo ~0,3 px en la arista
             add("pend_sup_%d_%d" % (i, k), "body", (-w, y_a - THICK, -r_a), (w, y_a, -r_a + len_t), "hull", L,
                 origin=(0, y_a, -r_a), rot=(-ang_t, 0, 0))
         for i in range(n_bot):
-            r_a = R - dr_b * i
+            r_a = R0 - dr_b * i
             y_a = yb - dy_b * i
-            w = (r_a - dr_b) * T - 0.05
+            w = (r_a - dr_b / 2) * T
             add("pend_inf_%d_%d" % (i, k), "body", (-w, y_a, -r_a), (w, y_a + THICK, -r_a + len_b), "dark", L,
                 origin=(0, y_a, -r_a), rot=(ang_b, 0, 0))
+        # Placas planas de relleno justo bajo la superficie: lo que se ve por las juntas es casi del mismo tono y altura
         for i in range(n_top):
-            r_a = R - dr_t * i
-            y1 = yt + dy_t * i - THICK / math.cos(ang_t / D) - 0.15
-            add("soporte_sup_%d_%d" % (i, k), "body", (-r_a * T, y1 - 1.0, -r_a), (r_a * T, y1, -(r_a - dr_t)), "hull", L)
+            r_a = R0 - dr_t * i
+            y_a = yt + dy_t * i
+            add("soporte_sup_%d_%d" % (i, k), "body", (-r_a * T, y_a - 1.05, -r_a), (r_a * T, y_a - 0.05, -(r_a - dr_t)), "hull", L)
         for i in range(n_bot):
-            r_a = R - dr_b * i
-            y0 = yb - dy_b * i + THICK / math.cos(ang_b / D) + 0.15
-            add("soporte_inf_%d_%d" % (i, k), "body", (-r_a * T, y0, -r_a), (r_a * T, y0 + 1.0, -(r_a - dr_b)), "dark", L)
-        add("borde_%d" % k, "body", (-(R - 1.0) * T, yb, -R), ((R - 1.0) * T, yt, -(R - 2.0)), "hull", L)
+            r_a = R0 - dr_b * i
+            y_a = yb - dy_b * i
+            add("soporte_inf_%d_%d" % (i, k), "body", (-r_a * T, y_a + 0.05, -r_a), (r_a * T, y_a + 1.05, -(r_a - dr_b)), "dark", L)
+        # Muro del borde: anchura completa hasta la arista (sin muescas en las esquinas) y alturas desfasadas
+        # 0,01 px entre lados alternos para que las tapas solapadas no parpadeen.
+        off = 0.01 * (k % 2)
+        add("borde_%d" % k, "body", (-R * T, yb + off, -R), (R * T, yt - off, -(R - 2.0)), "hull", L)
         add("franja_borde_%d" % k, "glow", (-3.5, yb + 1, -R - 0.6), (3.5, yt - 1, -R), "yellow", L)
-        add("franja_pendiente_%d" % k, "glow", (-2.5, yt, -R), (2.5, yt + 0.6, -R + len_t * n_top), "yellow", L,
-            origin=(0, yt, -R), rot=(-ang_t, 0, 0))
+        add("franja_pendiente_%d" % k, "glow", (-2.5, yt - 0.05, -R0), (2.5, yt + 0.6, -R0 + len_t * n_top), "yellow", L,
+            origin=(0, yt - 0.05, -R0), rot=(-ang_t, 0, 0))
         # anillo plano de 2 px (dos tiras de 1 px) alrededor de la cúpula, a la altura donde acaba la pendiente
         for j in range(2):
             r_out = SILL_OUT + 2.0 - j
@@ -137,17 +144,60 @@ def build():
         # borde opaco bajo el cristal (hueco por dentro: no hay bloque macizo)
         w_sill = (SILL_OUT + SILL_IN) / 2 * T
         add("borde_cupula_%d" % k, "body", (-w_sill, yb, -SILL_OUT), (w_sill, SILL_TOP, -SILL_IN), "dark", L)
+        # tira de luz en la pared interior de la cabina
+        add("luz_interior_%d" % k, "glow", (-5.5, 19.5, -SILL_IN), (5.5, 20.5, -SILL_IN + 0.4), "cyan", L)
         w_g = DOME * T - 0.2
         add("cristal_pared_%d" % k, "dome", (-w_g, SILL_TOP, -DOME - 0.5), (w_g, GLASS_TOP, -DOME + 0.5), "glass", L)
         for i in range(3):
-            r = DOME - (DOME - 10) / 3 * i
-            y = GLASS_TOP + 8 / 3 * i
-            wr = (r - (DOME - 10) / 3) * T - 0.25
-            add("cristal_techo_%d_%d" % (i, k), "dome", (-wr, y - 1.5, -r), (wr, y, -r + seg_len), "glass", L,
-                origin=(0, y, -r), rot=(-aR, 0, 0))
+            r_a, y_a = PROFILE[i]
+            r_b, y_b = PROFILE[i + 1]
+            ang = math.atan2(y_b - y_a, r_a - r_b) * D
+            ln = math.hypot(r_a - r_b, y_b - y_a)
+            wr = (r_a - 0.6 * (r_a - r_b)) * T
+            add("cristal_techo_%d_%d" % (i, k), "dome", (-wr, y_a - 1.5, -r_a), (wr, y_a, -r_a + ln), "glass", L,
+                origin=(0, y_a, -r_a), rot=(-ang, 0, 0))
 
-    # --- Cabina hueca: solo un cojín de 2 px sobre el suelo; todo lo demás, vacío para el piloto
+    # --- Nervios del marco sobre las aristas de la cúpula (siguen el perfil curvo hasta la tapa)
+    for k in range(8):
+        yaw = -(22.5 + 45 * k)
+        for i in range(3):
+            r_a, y_a = PROFILE[i]
+            r_b, y_b = PROFILE[i + 1]
+            rv_a, rv_b = r_a / math.cos(math.pi / 8), r_b / math.cos(math.pi / 8)
+            ang = math.atan2(y_b - y_a, rv_a - rv_b) * D
+            ln = math.hypot(rv_a - rv_b, y_b - y_a)
+            add("nervio_%d_%d" % (i, k), "frame", (-0.7, y_a - 0.9, -rv_a), (0.7, y_a + 0.7, -rv_a + ln), "frame",
+                origin=(0, y_a, -rv_a), rot=(-ang, yaw, 0))
+    # baliza sobre la tapa
+    add("baliza", "glow", (-1.2, 50, -1.2), (1.2, 52, 1.2), "yellow")
+
+    # --- Cabina: todo bajo y pegado a las paredes; el jugador (cadera a 16 px) queda libre y a la vista.
+    # Nariz de la nave = -Z. Las piernas del piloto llegan hasta ~z=-11, así que la consola va más allá.
     add("asiento_base", "body", (-5, FLOOR, -2), (5, FLOOR + 2, 4), "seat")
+    add("respaldo", "body", (-5, FLOOR + 2, 3.5), (5, FLOOR + 13, 5.5), "seat")
+    add("reposacabezas", "body", (-3.5, FLOOR + 13, 3.5), (3.5, FLOOR + 17, 5.5), "seat")
+    add("respaldo_luz", "glow", (-1.5, FLOOR + 6, 3.2), (1.5, FLOOR + 11, 3.5), "cyan")
+    for n, s_ in (("izq", -1), ("der", 1)):
+        x0, x1 = (-11.0, -9.5) if s_ < 0 else (9.5, 11.0)
+        add("reposabrazos_%s" % n, "body", (x0, FLOOR, -4), (x1, FLOOR + 4.5, 4), "dark")
+        add("reposabrazos_tapa_%s" % n, "body", (x0 - 0.5, FLOOR + 4.5, -4), (x1 + 0.5, FLOOR + 5.5, 4), "pod")
+        add("boton_%s" % n, "glow", (x0 + 0.2, FLOOR + 5.5, -3), (x1 - 0.2, FLOOR + 6, -1.5), "red" if s_ < 0 else "cyan")
+        # placa de suelo y tira de luz junto a la pared
+        add("suelo_luz_%s" % n, "glow", ((-13.5 if s_ < 0 else 12.5), FLOOR, -8), ((-12.5 if s_ < 0 else 13.5), FLOOR + 0.4, 8), "cyan")
+    add("suelo_placa", "body", (-10, FLOOR, -9), (10, FLOOR + 0.3, 2), "pod")
+    # consola delantera: bloque bajo con pantallas inclinadas en la cara que mira al piloto
+    add("consola_base", "body", (-9, FLOOR, -17.5), (9, FLOOR + 3, -13.5), "dark")
+    add("consola_tapa", "body", (-9.5, FLOOR + 3, -17.8), (9.5, FLOOR + 4, -13.2), "pod")
+    add("consola_panel", "body", (-8, FLOOR + 4, -17.5), (8, FLOOR + 6.5, -15), "dark",
+        origin=(0, FLOOR + 4, -15), rot=(20, 0, 0))
+    add("pantalla_izq", "glow", (-7, FLOOR + 6.5, -17.2), (-2.5, FLOOR + 7.0, -15.2), "cyan",
+        origin=(0, FLOOR + 4, -15), rot=(20, 0, 0))
+    add("pantalla_cen", "glow", (-1.8, FLOOR + 6.5, -17.2), (1.8, FLOOR + 7.0, -15.2), "yellow",
+        origin=(0, FLOOR + 4, -15), rot=(20, 0, 0))
+    add("pantalla_der", "glow", (2.5, FLOOR + 6.5, -17.2), (7, FLOOR + 7.0, -15.2), "cyan",
+        origin=(0, FLOOR + 4, -15), rot=(20, 0, 0))
+    add("boton_consola_1", "glow", (-6, FLOOR + 3.2, -14.3), (-4.5, FLOOR + 3.8, -13.7), "red")
+    add("boton_consola_2", "glow", (4.5, FLOOR + 3.2, -14.3), (6, FLOOR + 3.8, -13.7), "orange")
 
     # --- Propulsores: cubos de basura tumbados, cerrados delante y abiertos detrás (fuego)
     for n, s in (("izq", -1), ("der", 1)):

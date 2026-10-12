@@ -1,9 +1,5 @@
 {
   "item.spacecruiser.space_cruiser": "Space Cruiser",
   "entity.spacecruiser.space_cruiser": "Space Cruiser",
-  "key.spacecruiser.descend": "Descender (Space Cruiser)",
-  "item.spacecruiser.space_cruiser_minus1": "Space Cruiser (-1 px)",
-  "entity.spacecruiser.space_cruiser_minus1": "Space Cruiser (-1 px)",
-  "item.spacecruiser.space_cruiser_minus2": "Space Cruiser (-2 px)",
-  "entity.spacecruiser.space_cruiser_minus2": "Space Cruiser (-2 px)"
+  "key.spacecruiser.descend": "Descender (Space Cruiser)"
 }

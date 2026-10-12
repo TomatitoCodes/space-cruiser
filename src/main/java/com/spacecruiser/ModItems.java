@@ -12,9 +12,6 @@ import java.util.function.Supplier;
 
 public final class ModItems {
 	public static final Item SPACE_CRUISER = register("space_cruiser", () -> ModEntities.SPACE_CRUISER);
-	// Versiones de prueba a menor escala: sin receta, se sacan de la pestaña Herramientas o con /give.
-	public static final Item SPACE_CRUISER_MINUS_1 = register("space_cruiser_minus1", () -> ModEntities.SPACE_CRUISER_MINUS_1);
-	public static final Item SPACE_CRUISER_MINUS_2 = register("space_cruiser_minus2", () -> ModEntities.SPACE_CRUISER_MINUS_2);
 
 	private ModItems() {
 	}
