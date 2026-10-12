@@ -116,7 +116,7 @@ public final class GpsNetworking {
 			spot = findSafeSpot(to, 0.0, ship.getY(), 0.0, dims);
 		}
 		if (spot == null) {
-			player.sendMessage(Text.translatable("message.spacecruiser.gps.no_spot"), true);
+			player.sendMessage(Text.translatable("message.spacecruiser.gps.no_spot"), false);
 			return;
 		}
 
@@ -152,7 +152,16 @@ public final class GpsNetworking {
 		if (world.getDimension().hasCeiling()) {
 			top = Math.min(top, 120);
 		}
-		int startY = MathHelper.clamp((int) Math.ceil(y) + 8, bottom, top);
+		// Altura de partida: la de la nave si cabe en la dimensión de destino; si no (p. ej. un mundo plano a y=-58
+		// al ir al Nether), una altura típica de esa dimensión.
+		int guess = (int) Math.ceil(y) + 8;
+		int startY;
+		if (guess > bottom + 8 && guess <= top) {
+			startY = guess;
+		} else {
+			int typical = world.getRegistryKey() == World.NETHER ? 64 : world.getRegistryKey() == World.END ? 70 : 80;
+			startY = MathHelper.clamp(typical, bottom + 1, top);
+		}
 		int cx = MathHelper.floor(x);
 		int cz = MathHelper.floor(z);
 
