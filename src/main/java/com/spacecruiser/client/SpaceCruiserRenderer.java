@@ -100,7 +100,7 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 
 		if (!hideDome) {
 			frame.render(matrices, solid, light, OverlayTexture.DEFAULT_UV);
-			VertexConsumer glass = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(GLASS_TEXTURE));
+			VertexConsumer glass = vertexConsumers.getBuffer(GlassRenderLayers.glass(GLASS_TEXTURE));
 			dome.render(matrices, glass, light, OverlayTexture.DEFAULT_UV);
 		}
 
