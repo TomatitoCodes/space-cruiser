@@ -22,6 +22,9 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 	private static final Identifier GLASS_TEXTURE =
 			Identifier.of(SpaceCruiserMod.MOD_ID, "textures/entity/space_cruiser_glass.png");
 
+	private static final Identifier BOTTLE_TEXTURE =
+			Identifier.of(SpaceCruiserMod.MOD_ID, "textures/entity/space_cruiser_bottle.png");
+
 	private final ModelPart body;
 	private final ModelPart glow;
 	private final ModelPart frame;
@@ -91,8 +94,8 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
 		}
 		battery.render(matrices, solid, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 
-		// Botella decorativa del suelo: cristal translúcido, visible también desde dentro.
-		bottle.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(GLASS_TEXTURE)), light,
+		// Botella decorativa del suelo: cristal verdoso casi opaco, visible también desde dentro.
+		bottle.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(BOTTLE_TEXTURE)), light,
 				OverlayTexture.DEFAULT_UV);
 
 		if (!hideDome) {
