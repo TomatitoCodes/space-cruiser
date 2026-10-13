@@ -404,7 +404,7 @@ def build():
     # --- Dos linternas pegadas con cinta americana, juntas en el centro del borde de la placa delantera (lado 0),
     # a cada lado de la franja amarilla y apuntando hacia delante (-Z)
     for n, sx in (("izq", -1), ("der", 1)):
-        cx = sx * 5.2
+        cx = sx * 11.0
 
         def lin(name, hx, y0, y1, z0, z1, slot, group="body", dx=0.0, n=n, cx=cx):
             add("linterna_%s_%s" % (n, name), group, (cx + dx - hx, y0, -R0 + z0), (cx + dx + hx, y1, -R0 + z1), slot, 0)
@@ -428,17 +428,10 @@ def build():
             hz = hx if hz is None else hz
             add("pata_%d_%s" % (i, name), group, (cx + dx - hx, y0, cz + dz - hz), (cx + dx + hx, y1, cz + dz + hz), slot)
 
-        leg("anclaje", 3.8, 8.0, 10.0, "dark")
-        leg("anclaje_placa", 3.0, 7.4, 8.0, "pod")
-        leg("manguito", 2.2, 4.6, 7.4, "dark")
-        leg("manguito_anillo", 2.5, 6.0, 6.7, "chrome")
-        leg("piston", 1.1, 2.0, 4.6, "chrome")
+        leg("anclaje", 3.4, 8.6, 10.0, "chrome")
+        leg("manguito", 2.6, 7.0, 8.6, "dark")
+        leg("piston", 1.8, 1.2, 7.0, "chrome")
         leg("pie_base", 4.2, 0.0, 1.2, "dark")
-        leg("pie_cuello", 2.8, 1.2, 2.2, "dark")
-        # aletas de refuerzo en escalera, hacia fuera en X y en Z
-        for st, (d0, d1, h0, h1) in enumerate(((1.8, 4.0, 2.2, 3.4), (1.8, 3.0, 3.4, 5.4))):
-            leg("aleta_x_%d" % st, (d1 - d0) / 2, h0, h1, "dark", hz=0.5, dx=sx * (d0 + d1) / 2)
-            leg("aleta_z_%d" % st, 0.5, h0, h1, "dark", hz=(d1 - d0) / 2, dz=sz * (d0 + d1) / 2)
         # luces del plato (a brillo máximo)
         leg("pie_luz_x", 1.6, 1.2, 1.5, "cyan", "glow", hz=0.3, dz=sz * 3.8, dx=0.0)
         leg("pie_luz_z", 0.3, 1.2, 1.5, "cyan", "glow", hz=1.6, dx=sx * 3.8, dz=0.0)
