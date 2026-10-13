@@ -23,7 +23,11 @@ jobs:
       - name: Compilar
         run: |
           chmod +x gradlew
-          ./gradlew build --stacktrace
+          set +e
+          ./gradlew build --stacktrace 2>&1 | tee build.log
+          code=${PIPESTATUS[0]}
+          grep -E "error:|warning: \[removal\]" -A2 build.log | head -40 | while IFS= read -r l; do echo "::error::$l"; done
+          exit $code
 
       - name: Subir el jar
         uses: actions/upload-artifact@v4
