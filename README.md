@@ -1,17 +1,19 @@
-# Space Cruiser (Fabric 1.21.1)
+# Space Cruiser (Fabric 26.3)
+
+> Rama `mc-26.3`: port a Minecraft 26.3. La versión para 1.21.1 sigue en `main`.
 
 Nave espacial pilotable: casco octogonal gris, franjas luminosas amarillas, propulsores laterales con luces ámbar y cúpula de cristal.
 
 ## Compilar y probar
 
-Requiere JDK 21.
+Requiere JDK 25.
 
 ```
-./gradlew runClient     # abre Minecraft 1.21.1 con el mod
+./gradlew runClient     # abre Minecraft 26.3 con el mod
 ./gradlew build         # genera build/libs/spacecruiser-0.1.0.jar
 ```
 
-Si Gradle no resuelve alguna versión, mira las actuales para 1.21.1 en https://fabricmc.net/develop/ y cámbialas en `gradle.properties` (`loader_version`, `fabric_version`, `yarn_mappings`) y en `build.gradle` (versión de Loom).
+Si Gradle no resuelve alguna versión, mira las actuales para 26.3 en https://fabricmc.net/develop/ y cámbialas en `gradle.properties` (`loader_version`, `fabric_version`, `loom_version`). Desde 26.1 Minecraft va sin ofuscar: no hay `yarn_mappings` y el código usa los nombres oficiales de Mojang.
 
 ## Cómo se usa
 
