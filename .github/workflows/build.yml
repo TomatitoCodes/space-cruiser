@@ -15,8 +15,8 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 21
+          distribution: microsoft
+          java-version: 25
 
       - uses: gradle/actions/setup-gradle@v4
 
@@ -38,16 +38,33 @@ jobs:
             !build/libs/*-sources.jar
           if-no-files-found: error
 
-      # Solo en main: la release "latest" se rehace con el jar recién compilado, así el enlace
+      # Solo en la rama mc-26.3: la release "latest-26.3" se rehace con el jar recién compilado, así el enlace
       # de descarga es siempre el mismo y no hace falta iniciar sesión ni descomprimir nada.
-      - name: Publicar el jar en la release "latest"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Publicar el jar en la release "latest-26.3"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/mc-26.3'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           JAR=$(ls build/libs/*.jar | grep -v -- '-sources' | head -n 1)
-          gh release delete latest --cleanup-tag --yes || true
-          gh release create latest "$JAR" \
-            --title "Última compilación" \
+          gh release delete latest-26.3 --cleanup-tag --yes || true
+          gh release create latest-26.3 "$JAR" \
+            --title "Última compilación (Minecraft 26.3)" \
             --notes "Jar compilado desde el commit ${GITHUB_SHA::7}" \
             --target "$GITHUB_SHA"
+
+      # Ayuda al port: saca los fuentes descompilados de Minecraft 26.3 para poder consultarlos.
+      - name: Generar fuentes de Minecraft
+        if: always() && github.event_name == 'workflow_dispatch'
+        run: |
+          ./gradlew genSources --stacktrace || true
+          mkdir -p mcsources
+          find "$HOME/.gradle" -name '*sources*.jar' \( -path '*minecraft*' -o -path '*fabric-loom*' \) -size +1M -exec cp {} mcsources/ \; || true
+          ls -la mcsources
+
+      - name: Subir fuentes de Minecraft
+        if: always() && github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mc-sources
+          path: mcsources/
+          if-no-files-found: warn
