@@ -61,10 +61,15 @@ jobs:
           find / -name '*-sources.jar' -size +500k -not -path '*/build/libs/*' 2>/dev/null | head -20 | while IFS= read -r f; do echo "::notice::FOUND $f $(stat -c %s "$f")"; cp "$f" mcsources/ || true; done
           ls -la mcsources
 
-      - name: Subir fuentes de Minecraft
+      # Los artefactos no siempre se pueden descargar: se publican también en una rama aparte (solo para consulta).
+      - name: Publicar fuentes en la rama mc-sources
         if: always() && github.ref == 'refs/heads/mc-26.3'
-        uses: actions/upload-artifact@v4
-        with:
-          name: mc-sources
-          path: mcsources/
-          if-no-files-found: warn
+        run: |
+          set -e
+          rm -rf /tmp/src && mkdir /tmp/src && cd /tmp/src
+          for j in "$GITHUB_WORKSPACE"/mcsources/*.jar; do unzip -qo "$j" -d "/tmp/src/$(basename "$j" .jar)" || true; done
+          cd /tmp/src
+          git init -q && git checkout -q -b mc-sources
+          git config user.name "ci" && git config user.email "ci@example.com"
+          git add -A && git commit -q -m "Fuentes de Minecraft 26.3 (descompiladas)"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" mc-sources
