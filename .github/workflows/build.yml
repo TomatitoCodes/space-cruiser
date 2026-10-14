@@ -54,7 +54,7 @@ jobs:
 
       # Ayuda al port: saca los fuentes descompilados de Minecraft 26.3 para poder consultarlos.
       - name: Generar fuentes de Minecraft
-        if: always() && github.event_name == 'workflow_dispatch'
+        if: always() && github.ref == 'refs/heads/mc-26.3'
         run: |
           ./gradlew genSources --stacktrace || true
           mkdir -p mcsources
@@ -62,7 +62,7 @@ jobs:
           ls -la mcsources
 
       - name: Subir fuentes de Minecraft
-        if: always() && github.event_name == 'workflow_dispatch'
+        if: always() && github.ref == 'refs/heads/mc-26.3'
         uses: actions/upload-artifact@v4
         with:
           name: mc-sources
