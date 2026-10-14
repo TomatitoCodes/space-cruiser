@@ -56,9 +56,9 @@ jobs:
       - name: Generar fuentes de Minecraft
         if: always() && github.ref == 'refs/heads/mc-26.3'
         run: |
-          ./gradlew genSources --stacktrace || true
+          ./gradlew genSources --stacktrace 2>&1 | tail -15 | while IFS= read -r l; do echo "::notice::$l"; done || true
           mkdir -p mcsources
-          find "$HOME/.gradle" -name '*sources*.jar' \( -path '*minecraft*' -o -path '*fabric-loom*' \) -size +1M -exec cp {} mcsources/ \; || true
+          find / -name '*-sources.jar' -size +500k -not -path '*/build/libs/*' 2>/dev/null | head -20 | while IFS= read -r f; do echo "::notice::FOUND $f $(stat -c %s "$f")"; cp "$f" mcsources/ || true; done
           ls -la mcsources
 
       - name: Subir fuentes de Minecraft
