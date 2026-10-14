@@ -7,15 +7,9 @@
     "SDS"
   ],
   "key": {
-    "S": {
-      "item": "minecraft:shulker_shell"
-    },
-    "D": {
-      "item": "minecraft:diamond"
-    },
-    "P": {
-      "item": "minecraft:prismarine_crystals"
-    }
+    "S": "minecraft:shulker_shell",
+    "D": "minecraft:diamond",
+    "P": "minecraft:prismarine_crystals"
   },
   "result": {
     "id": "spacecruiser:hull",

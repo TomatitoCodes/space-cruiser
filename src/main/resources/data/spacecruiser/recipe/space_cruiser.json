@@ -7,18 +7,10 @@
     " N "
   ],
   "key": {
-    "H": {
-      "item": "spacecruiser:hull"
-    },
-    "R": {
-      "item": "spacecruiser:reactor"
-    },
-    "K": {
-      "item": "spacecruiser:cockpit"
-    },
-    "N": {
-      "item": "spacecruiser:navigation_console"
-    }
+    "H": "spacecruiser:hull",
+    "R": "spacecruiser:reactor",
+    "K": "spacecruiser:cockpit",
+    "N": "spacecruiser:navigation_console"
   },
   "result": {
     "id": "spacecruiser:space_cruiser",

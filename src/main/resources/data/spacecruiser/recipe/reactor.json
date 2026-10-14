@@ -7,18 +7,10 @@
     "MNM"
   ],
   "key": {
-    "M": {
-      "item": "minecraft:magma_block"
-    },
-    "N": {
-      "item": "minecraft:netherite_ingot"
-    },
-    "B": {
-      "item": "minecraft:blast_furnace"
-    },
-    "C": {
-      "item": "minecraft:heavy_core"
-    }
+    "M": "minecraft:magma_block",
+    "N": "minecraft:netherite_ingot",
+    "B": "minecraft:blast_furnace",
+    "C": "minecraft:heavy_core"
   },
   "result": {
     "id": "spacecruiser:reactor",

@@ -1,109 +1,117 @@
 package com.spacecruiser.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.spacecruiser.SpaceCruiserMod;
 import com.spacecruiser.entity.SpaceCruiserEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.util.Mth;
+import com.mojang.math.Axis;
 
-public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity> {
+public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity, SpaceCruiserRenderState> {
 	private static final Identifier TEXTURE =
-			Identifier.of(SpaceCruiserMod.MOD_ID, "textures/entity/space_cruiser.png");
+			Identifier.fromNamespaceAndPath(SpaceCruiserMod.MOD_ID, "textures/entity/space_cruiser.png");
 	private static final Identifier GLASS_TEXTURE =
-			Identifier.of(SpaceCruiserMod.MOD_ID, "textures/entity/space_cruiser_glass.png");
-
+			Identifier.fromNamespaceAndPath(SpaceCruiserMod.MOD_ID, "textures/entity/space_cruiser_glass.png");
 	private static final Identifier BOTTLE_TEXTURE =
-			Identifier.of(SpaceCruiserMod.MOD_ID, "textures/entity/space_cruiser_bottle.png");
+			Identifier.fromNamespaceAndPath(SpaceCruiserMod.MOD_ID, "textures/entity/space_cruiser_bottle.png");
 
 	private final ModelPart body;
 	private final ModelPart glow;
 	private final ModelPart frame;
 	private final ModelPart dome;
-	private final ModelPart battery;
+	private final ModelPart[] battery = new ModelPart[10];
 	private final ModelPart bottle;
 
-	public SpaceCruiserRenderer(EntityRendererFactory.Context context, float scale) {
+	public SpaceCruiserRenderer(EntityRendererProvider.Context context, float scale) {
 		super(context);
-		ModelPart root = context.getPart(SpaceCruiserClient.MODEL_LAYER);
+		ModelPart root = context.bakeLayer(SpaceCruiserClient.MODEL_LAYER);
 		this.body = root.getChild("body");
 		this.glow = root.getChild("glow");
 		this.frame = root.getChild("frame");
 		this.dome = root.getChild("dome");
-		this.battery = root.getChild("bateria");
+		for (int i = 0; i < 10; i++) {
+			this.battery[i] = root.getChild("bat_" + i);
+		}
 		this.bottle = root.getChild("botella");
 		this.shadowRadius = 2.3f * scale;
 	}
 
 	@Override
-	public Identifier getTexture(SpaceCruiserEntity entity) {
-		return TEXTURE;
+	public SpaceCruiserRenderState createRenderState() {
+		return new SpaceCruiserRenderState();
 	}
 
 	@Override
-	public void render(SpaceCruiserEntity entity, float yaw, float tickDelta, MatrixStack matrices,
-					   VertexConsumerProvider vertexConsumers, int light) {
-		super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
+	public void extractRenderState(SpaceCruiserEntity entity, SpaceCruiserRenderState state, float partialTick) {
+		super.extractRenderState(entity, state, partialTick);
+		Minecraft client = Minecraft.getInstance();
+		state.yRot = entity.getYRot(partialTick);
+		state.leanPitch = Mth.lerp(partialTick, entity.prevLeanPitch, entity.leanPitch);
+		state.leanRoll = Mth.lerp(partialTick, entity.prevLeanRoll, entity.leanRoll);
+		state.modelScale = entity.modelScale;
+		state.batteryLit = (int) Math.ceil(entity.getBattery() - 0.001f);
+		state.hideDome = client.player != null && entity.hasPassenger(client.player)
+				&& client.options.getCameraType().isFirstPerson();
+	}
 
-		MinecraftClient client = MinecraftClient.getInstance();
-		boolean hideDome = entity.hasPassenger(client.player) && client.options.getPerspective().isFirstPerson();
+	@Override
+	public void submit(SpaceCruiserRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+		super.submit(state, poseStack, collector, camera);
 
-		matrices.push();
+		poseStack.pushPose();
 
 		// Flotación suave.
-		float bob = MathHelper.sin((entity.age + tickDelta) * 0.12f) * 0.03f;
-		matrices.translate(0.0, 0.06 + bob, 0.0);
+		float bob = Mth.sin(state.ageInTicks * 0.12f) * 0.03f;
+		poseStack.translate(0.0, 0.06 + bob, 0.0);
 
 		// Escala de la versión (se aplica desde el suelo, bajo el centro de la nave).
-		matrices.scale(entity.modelScale, entity.modelScale, entity.modelScale);
+		poseStack.scale(state.modelScale, state.modelScale, state.modelScale);
 
 		// Orientación: tras esta rotación, +Z local es el morro de la nave.
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
+		poseStack.mulPose(Axis.YP.rotationDegrees(-state.yRot));
 
 		// Inclinación según el movimiento (morro abajo al avanzar, alabeo al desplazarse).
-		float pitch = MathHelper.lerp(tickDelta, entity.prevLeanPitch, entity.leanPitch);
-		float roll = MathHelper.lerp(tickDelta, entity.prevLeanRoll, entity.leanRoll);
-		matrices.translate(0.0, 1.2, 0.0);
-		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(pitch));
-		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
-		matrices.translate(0.0, -1.2, 0.0);
+		poseStack.translate(0.0, 1.2, 0.0);
+		poseStack.mulPose(Axis.XP.rotationDegrees(state.leanPitch));
+		poseStack.mulPose(Axis.ZP.rotationDegrees(state.leanRoll));
+		poseStack.translate(0.0, -1.2, 0.0);
 
 		// Convención de modelos de entidad: eje Y invertido y origen a 24 px del suelo.
-		matrices.scale(-1.0f, -1.0f, 1.0f);
-		matrices.translate(0.0, -1.5, 0.0);
+		poseStack.scale(-1.0f, -1.0f, 1.0f);
+		poseStack.translate(0.0, -1.5, 0.0);
 
-		VertexConsumer solid = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
-		body.render(matrices, solid, light, OverlayTexture.DEFAULT_UV);
+		int light = state.lightCoords;
+		int overlay = OverlayTexture.NO_OVERLAY;
+		RenderType solid = RenderTypes.entityCutout(TEXTURE);
+
+		collector.submitModelPart(body, poseStack, solid, light, overlay, null);
 
 		// Luces: siempre a brillo máximo, como si emitieran luz.
-		glow.render(matrices, solid, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+		collector.submitModelPart(glow, poseStack, solid, LightCoordsUtil.FULL_BRIGHT, overlay, null);
 
 		// Batería del reactor: se encienden tantos pilotos como carga quede (redondeando hacia arriba).
-		int lit = (int) Math.ceil(entity.getBattery() - 0.001f);
-		for (int i = 0; i < 10; i++) {
-			battery.getChild("bat_" + i).visible = i < lit;
+		for (int i = 0; i < state.batteryLit && i < 10; i++) {
+			collector.submitModelPart(this.battery[i], poseStack, solid, LightCoordsUtil.FULL_BRIGHT, overlay, null);
 		}
-		battery.render(matrices, solid, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 
 		// Botella decorativa del suelo: cristal verdoso casi opaco, visible también desde dentro.
-		bottle.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(BOTTLE_TEXTURE)), light,
-				OverlayTexture.DEFAULT_UV);
+		collector.submitModelPart(bottle, poseStack, RenderTypes.entityTranslucent(BOTTLE_TEXTURE), light, overlay, null);
 
-		if (!hideDome) {
-			frame.render(matrices, solid, light, OverlayTexture.DEFAULT_UV);
-			VertexConsumer glass = vertexConsumers.getBuffer(GlassRenderLayers.glass(GLASS_TEXTURE));
-			dome.render(matrices, glass, light, OverlayTexture.DEFAULT_UV);
+		if (!state.hideDome) {
+			collector.submitModelPart(frame, poseStack, solid, light, overlay, null);
+			collector.submitModelPart(dome, poseStack, GlassRenderLayers.glass(GLASS_TEXTURE), light, overlay, null);
 		}
 
-		matrices.pop();
+		poseStack.popPose();
 	}
 }

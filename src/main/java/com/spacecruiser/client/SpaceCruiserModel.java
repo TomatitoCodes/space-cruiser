@@ -1,10 +1,10 @@
 package com.spacecruiser.client;
 
-import net.minecraft.client.model.ModelData;
-import net.minecraft.client.model.ModelPartBuilder;
-import net.minecraft.client.model.ModelPartData;
-import net.minecraft.client.model.ModelTransform;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.geom.builders.PartPose;
 
 /**
  * GENERADO por tools/generate_model.py a partir del modelo de Blockbench. No editar a mano:
@@ -17,7 +17,7 @@ import net.minecraft.client.model.TexturedModelData;
  *  - glow:  franjas luminosas y fuego de los propulsores (brillo máximo)
  *  - frame: postes y tapa de la cúpula (opaco, se oculta en primera persona)
  *  - dome:  cristal de la cúpula (translúcido, se oculta en primera persona)
- *  - bateria: los 10 pilotos de la batería (brillo máximo; el renderer enciende solo los que tocan)
+ *  - bat_0..bat_9: los 10 pilotos de la batería (brillo máximo; el renderer dibuja solo los que tocan)
  *
  * Textura "space_cruiser.png": atlas de 512x512 con un rectángulo plano de color por cubo.
  */
@@ -28,16 +28,25 @@ public final class SpaceCruiserModel {
 	private SpaceCruiserModel() {
 	}
 
-	public static TexturedModelData getTexturedModelData() {
-		ModelData data = new ModelData();
-		ModelPartData root = data.getRoot();
+	public static LayerDefinition createLayer() {
+		MeshDefinition mesh = new MeshDefinition();
+		PartDefinition root = mesh.getRoot();
 
-		ModelPartData body = root.addChild("body", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData glow = root.addChild("glow", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData frame = root.addChild("frame", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData dome = root.addChild("dome", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData bateria = root.addChild("bateria", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData botella = root.addChild("botella", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
+		PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition glow = root.addOrReplaceChild("glow", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition frame = root.addOrReplaceChild("frame", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition dome = root.addOrReplaceChild("dome", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_0 = root.addOrReplaceChild("bat_0", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_1 = root.addOrReplaceChild("bat_1", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_2 = root.addOrReplaceChild("bat_2", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_3 = root.addOrReplaceChild("bat_3", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_4 = root.addOrReplaceChild("bat_4", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_5 = root.addOrReplaceChild("bat_5", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_6 = root.addOrReplaceChild("bat_6", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_7 = root.addOrReplaceChild("bat_7", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_8 = root.addOrReplaceChild("bat_8", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition bat_9 = root.addOrReplaceChild("bat_9", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition botella = root.addOrReplaceChild("botella", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
 
 		// --- body
 		c(body, "fondo_0", 1, 32, -19.5f, -5.5f, -8.0772f, 39.0f, 5.5f, 16.1543f, 0.0f, -8.5f, 0.0f, 0.0f, 0.0f);
@@ -150,7 +159,7 @@ public final class SpaceCruiserModel {
 		c(body, "pata_3_manguito", 131, 180, 11.9f, -8.6f, -17.1f, 5.2f, 1.6f, 5.2f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body, "pata_3_piston", 477, 146, 12.7f, -7.0f, -16.3f, 3.6f, 5.8f, 3.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body, "pata_3_pie_base", 333, 146, 10.3f, -1.2f, -18.7f, 8.4f, 1.2f, 8.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData body_lado0 = body.addChild("lado_0", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(0), 0));
+		PartDefinition body_lado0 = body.addOrReplaceChild("lado_0", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(0), 0));
 		c(body_lado0, "pend_sup_0_0", 391, 268, -14.6439f, 0.0f, -1.8112f, 29.2878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado0, "pend_sup_1_0", 435, 280, -13.9398f, 0.0f, -1.8112f, 27.8795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
 		c(body_lado0, "pend_sup_2_0", 414, 292, -13.2356f, 0.0f, -1.8112f, 26.4712f, 2.0f, 1.8112f, 0.0f, -18.25f, 32.2f, -20.1858f, 0.0f);
@@ -215,7 +224,7 @@ public final class SpaceCruiserModel {
 		c(body_lado0, "linterna_der_cinta_2", 390, 346, 9.45f, -19.7f, 30.5f, 3.1f, 2.9f, 0.7f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado0, "linterna_der_cinta_ala_a", 214, 402, 7.45f, -17.7f, 31.9f, 2.0f, 0.6f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado0, "linterna_der_cinta_ala_b", 206, 402, 12.55f, -17.7f, 31.9f, 2.0f, 0.6f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData body_lado1 = body.addChild("lado_1", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-45), 0));
+		PartDefinition body_lado1 = body.addOrReplaceChild("lado_1", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-45), 0));
 		c(body_lado1, "pend_sup_0_1", 326, 268, -14.6439f, 0.0f, -1.8112f, 29.2878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado1, "pend_sup_1_1", 311, 280, -13.9398f, 0.0f, -1.8112f, 27.8795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
 		c(body_lado1, "pend_sup_2_1", 296, 292, -13.2356f, 0.0f, -1.8112f, 26.4712f, 2.0f, 1.8112f, 0.0f, -18.25f, 32.2f, -20.1858f, 0.0f);
@@ -261,7 +270,7 @@ public final class SpaceCruiserModel {
 		c(body_lado1, "gps_marco_abajo", 490, 402, -4.9f, -1.9f, 0.6f, 9.8f, 0.4f, 0.4f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
 		c(body_lado1, "gps_marco_izq", 345, 397, -4.9f, -1.9f, 1.0f, 0.4f, 0.4f, 2.0f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
 		c(body_lado1, "gps_marco_der", 338, 397, 4.5f, -1.9f, 1.0f, 0.4f, 0.4f, 2.0f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
-		ModelPartData body_lado2 = body.addChild("lado_2", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-90), 0));
+		PartDefinition body_lado2 = body.addOrReplaceChild("lado_2", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-90), 0));
 		c(body_lado2, "pend_sup_0_2", 261, 268, -14.6439f, 0.0f, -1.8112f, 29.2878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado2, "pend_sup_1_2", 187, 280, -13.9398f, 0.0f, -1.8112f, 27.8795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
 		c(body_lado2, "pend_sup_2_2", 178, 292, -13.2356f, 0.0f, -1.8112f, 26.4712f, 2.0f, 1.8112f, 0.0f, -18.25f, 32.2f, -20.1858f, 0.0f);
@@ -300,7 +309,7 @@ public final class SpaceCruiserModel {
 		c(body_lado2, "borde_cupula_2", 75, 131, -7.9736f, -23.5f, 18.5f, 15.9472f, 11.5f, 1.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado2, "terminal_base_2", 66, 159, -6.0f, -20.0f, 16.0f, 12.0f, 6.0f, 2.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado2, "terminal_tapa_2", 35, 346, -6.4f, -21.0f, 15.6f, 12.8f, 1.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData body_lado3 = body.addChild("lado_3", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-135), 0));
+		PartDefinition body_lado3 = body.addOrReplaceChild("lado_3", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-135), 0));
 		c(body_lado3, "pend_sup_0_3", 196, 268, -14.6439f, 0.0f, -1.8112f, 29.2878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado3, "pend_sup_1_3", 63, 280, -13.9398f, 0.0f, -1.8112f, 27.8795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
 		c(body_lado3, "pend_sup_2_3", 60, 292, -13.2356f, 0.0f, -1.8112f, 26.4712f, 2.0f, 1.8112f, 0.0f, -18.25f, 32.2f, -20.1858f, 0.0f);
@@ -339,7 +348,7 @@ public final class SpaceCruiserModel {
 		c(body_lado3, "borde_cupula_3", 38, 131, -7.9736f, -23.5f, 18.5f, 15.9472f, 11.5f, 1.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado3, "taquilla_3", 458, 131, -5.5f, -22.0f, 15.5f, 11.0f, 8.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado3, "taquilla_puerta_3", 244, 180, -4.5f, -21.0f, 15.2f, 9.0f, 6.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData body_lado4 = body.addChild("lado_4", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-180), 0));
+		PartDefinition body_lado4 = body.addOrReplaceChild("lado_4", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-180), 0));
 		c(body_lado4, "pend_sup_0_4", 131, 268, -14.6439f, 0.0f, -1.8112f, 29.2878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado4, "pend_sup_1_4", 435, 274, -13.9398f, 0.0f, -1.8112f, 27.8795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
 		c(body_lado4, "pend_sup_2_4", 414, 286, -13.2356f, 0.0f, -1.8112f, 26.4712f, 2.0f, 1.8112f, 0.0f, -18.25f, 32.2f, -20.1858f, 0.0f);
@@ -387,7 +396,7 @@ public final class SpaceCruiserModel {
 		c(body_lado4, "reactor_tubo_-1", 306, 397, -4.6f, -24.8f, 16.2f, 0.6f, 0.8f, 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado4, "reactor_aleta_1", 17, 146, 3.8f, -24.0f, 15.0f, 1.0f, 7.5f, 2.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado4, "reactor_tubo_1", 272, 397, 3.6f, -24.8f, 16.2f, 1.4f, 0.8f, 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData body_lado5 = body.addChild("lado_5", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-225), 0));
+		PartDefinition body_lado5 = body.addOrReplaceChild("lado_5", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-225), 0));
 		c(body_lado5, "pend_sup_0_5", 66, 268, -14.6439f, 0.0f, -1.8112f, 29.2878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado5, "pend_sup_1_5", 311, 274, -13.9398f, 0.0f, -1.8112f, 27.8795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
 		c(body_lado5, "pend_sup_2_5", 296, 286, -13.2356f, 0.0f, -1.8112f, 26.4712f, 2.0f, 1.8112f, 0.0f, -18.25f, 32.2f, -20.1858f, 0.0f);
@@ -426,7 +435,7 @@ public final class SpaceCruiserModel {
 		c(body_lado5, "borde_cupula_5", 446, 114, -7.9736f, -23.5f, 18.5f, 15.9472f, 11.5f, 1.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado5, "taquilla_5", 428, 131, -5.5f, -22.0f, 15.5f, 11.0f, 8.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado5, "taquilla_puerta_5", 223, 180, -4.5f, -21.0f, 15.2f, 9.0f, 6.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData body_lado6 = body.addChild("lado_6", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-270), 0));
+		PartDefinition body_lado6 = body.addOrReplaceChild("lado_6", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-270), 0));
 		c(body_lado6, "pend_sup_0_6", 1, 268, -14.6439f, 0.0f, -1.8112f, 29.2878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado6, "pend_sup_1_6", 187, 274, -13.9398f, 0.0f, -1.8112f, 27.8795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
 		c(body_lado6, "pend_sup_2_6", 178, 286, -13.2356f, 0.0f, -1.8112f, 26.4712f, 2.0f, 1.8112f, 0.0f, -18.25f, 32.2f, -20.1858f, 0.0f);
@@ -465,7 +474,7 @@ public final class SpaceCruiserModel {
 		c(body_lado6, "borde_cupula_6", 409, 114, -7.9736f, -23.5f, 18.5f, 15.9472f, 11.5f, 1.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado6, "terminal_base_6", 35, 159, -6.0f, -20.0f, 16.0f, 12.0f, 6.0f, 2.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(body_lado6, "terminal_tapa_6", 1, 346, -6.4f, -21.0f, 15.6f, 12.8f, 1.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData body_lado7 = body.addChild("lado_7", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-315), 0));
+		PartDefinition body_lado7 = body.addOrReplaceChild("lado_7", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-315), 0));
 		c(body_lado7, "pend_sup_0_7", 397, 262, -14.6439f, 0.0f, -1.8112f, 29.2878f, 2.0f, 1.8112f, 0.0f, -17.0f, 35.6f, -20.1858f, 0.0f);
 		c(body_lado7, "pend_sup_1_7", 63, 274, -13.9398f, 0.0f, -1.8112f, 27.8795f, 2.0f, 1.8112f, 0.0f, -17.625f, 33.9f, -20.1858f, 0.0f);
 		c(body_lado7, "pend_sup_2_7", 60, 286, -13.2356f, 0.0f, -1.8112f, 26.4712f, 2.0f, 1.8112f, 0.0f, -18.25f, 32.2f, -20.1858f, 0.0f);
@@ -544,7 +553,7 @@ public final class SpaceCruiserModel {
 		c(glow, "pata_3_pie_luz_x", 47, 406, 12.9f, -1.5f, -18.6f, 3.2f, 0.3f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow, "pata_3_pie_luz_z", 350, 346, 18.0f, -1.5f, -16.1f, 0.6f, 0.3f, 3.2f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow, "pata_3_pie_marca", 161, 402, 15.1f, -1.5f, -16.7f, 1.6f, 0.3f, 1.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData glow_lado0 = glow.addChild("lado_0", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(0), 0));
+		PartDefinition glow_lado0 = glow.addOrReplaceChild("lado_0", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(0), 0));
 		c(glow_lado0, "franja_borde_0", 238, 346, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado0, "franja_pendiente_0", 325, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);
 		c(glow_lado0, "luz_interior_0", 126, 402, -5.5f, -20.5f, 18.1f, 11.0f, 1.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -559,7 +568,7 @@ public final class SpaceCruiserModel {
 		c(glow_lado0, "volante_boton_der", 366, 402, 4.0f, -7.6f, -0.4f, 0.8f, 0.5f, 0.8f, 0.0f, -19.5f, 15.5f, 22.0f, 0.0f);
 		c(glow_lado0, "linterna_izq_lente", 298, 397, -12.25f, -19.4f, 36.45f, 2.5f, 2.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado0, "linterna_der_lente", 290, 397, 9.75f, -19.4f, 36.45f, 2.5f, 2.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData glow_lado1 = glow.addChild("lado_1", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-45), 0));
+		PartDefinition glow_lado1 = glow.addOrReplaceChild("lado_1", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-45), 0));
 		c(glow_lado1, "franja_borde_1", 220, 346, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado1, "franja_pendiente_1", 284, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);
 		c(glow_lado1, "luz_interior_1", 101, 402, -5.5f, -20.5f, 18.1f, 11.0f, 1.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -595,7 +604,7 @@ public final class SpaceCruiserModel {
 		c(glow_lado1, "mapa_boton_1", 259, 406, -3.2f, -1.9f, 0.0f, 0.8f, 0.4f, 0.4f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
 		c(glow_lado1, "mapa_boton_2", 254, 406, 2.6f, -1.9f, 0.0f, 0.8f, 0.4f, 0.4f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
 		c(glow_lado1, "mapa_boton_3", 249, 406, 3.8f, -1.9f, 0.0f, 0.8f, 0.4f, 0.4f, 0.0f, -18.0f, 14.5f, 25.0f, 0.0f);
-		ModelPartData glow_lado2 = glow.addChild("lado_2", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-90), 0));
+		PartDefinition glow_lado2 = glow.addOrReplaceChild("lado_2", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-90), 0));
 		c(glow_lado2, "franja_borde_2", 202, 346, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado2, "franja_pendiente_2", 243, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);
 		c(glow_lado2, "luz_interior_2", 76, 402, -5.5f, -20.5f, 18.1f, 11.0f, 1.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -603,12 +612,12 @@ public final class SpaceCruiserModel {
 		c(glow_lado2, "terminal_boton_2_0", 336, 402, -3.5f, -21.4f, 16.6f, 1.0f, 0.4f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado2, "terminal_boton_2_1", 330, 402, -0.9f, -21.4f, 16.6f, 1.0f, 0.4f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado2, "terminal_boton_2_2", 324, 402, 1.7f, -21.4f, 16.6f, 1.0f, 0.4f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData glow_lado3 = glow.addChild("lado_3", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-135), 0));
+		PartDefinition glow_lado3 = glow.addOrReplaceChild("lado_3", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-135), 0));
 		c(glow_lado3, "franja_borde_3", 184, 346, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado3, "franja_pendiente_3", 202, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);
 		c(glow_lado3, "luz_interior_3", 51, 402, -5.5f, -20.5f, 18.1f, 11.0f, 1.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado3, "taquilla_tirador_3", 364, 397, -0.4f, -19.0f, 14.9f, 0.8f, 2.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData glow_lado4 = glow.addChild("lado_4", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-180), 0));
+		PartDefinition glow_lado4 = glow.addOrReplaceChild("lado_4", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-180), 0));
 		c(glow_lado4, "franja_borde_4", 166, 346, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado4, "franja_pendiente_4", 161, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);
 		c(glow_lado4, "luz_interior_4", 26, 402, -5.5f, -20.5f, 18.1f, 11.0f, 1.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -624,12 +633,12 @@ public final class SpaceCruiserModel {
 		c(glow_lado4, "reactor_luz_1", 363, 255, 3.8f, -22.5f, 14.6f, 1.0f, 4.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado4, "reactor_valvula_1", 342, 402, 3.9f, -25.2f, 16.6f, 0.8f, 0.4f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado4, "reactor_piloto_1", 384, 402, 3.8f, -15.8f, 14.0f, 1.0f, 0.8f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData glow_lado5 = glow.addChild("lado_5", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-225), 0));
+		PartDefinition glow_lado5 = glow.addOrReplaceChild("lado_5", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-225), 0));
 		c(glow_lado5, "franja_borde_5", 148, 346, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado5, "franja_pendiente_5", 120, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);
 		c(glow_lado5, "luz_interior_5", 1, 402, -5.5f, -20.5f, 18.1f, 11.0f, 1.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado5, "taquilla_tirador_5", 359, 397, -0.4f, -19.0f, 14.9f, 0.8f, 2.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData glow_lado6 = glow.addChild("lado_6", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-270), 0));
+		PartDefinition glow_lado6 = glow.addOrReplaceChild("lado_6", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-270), 0));
 		c(glow_lado6, "franja_borde_6", 130, 346, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado6, "franja_pendiente_6", 79, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);
 		c(glow_lado6, "luz_interior_6", 479, 397, -5.5f, -20.5f, 18.1f, 11.0f, 1.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -637,7 +646,7 @@ public final class SpaceCruiserModel {
 		c(glow_lado6, "terminal_boton_6_0", 318, 402, -3.5f, -21.4f, 16.6f, 1.0f, 0.4f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado6, "terminal_boton_6_1", 312, 402, -0.9f, -21.4f, 16.6f, 1.0f, 0.4f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado6, "terminal_boton_6_2", 306, 402, 1.7f, -21.4f, 16.6f, 1.0f, 0.4f, 0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData glow_lado7 = glow.addChild("lado_7", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-315), 0));
+		PartDefinition glow_lado7 = glow.addOrReplaceChild("lado_7", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-315), 0));
 		c(glow_lado7, "franja_borde_7", 112, 346, -3.5f, -16.0f, 36.0f, 7.0f, 3.0f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(glow_lado7, "franja_pendiente_7", 38, 95, -2.5f, -0.65f, -14.49f, 5.0f, 0.65f, 14.49f, 0.0f, -16.95f, 35.6f, -20.1858f, 0.0f);
 		c(glow_lado7, "luz_interior_7", 454, 397, -5.5f, -20.5f, 18.1f, 11.0f, 1.0f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -661,108 +670,126 @@ public final class SpaceCruiserModel {
 		c(frame, "poste_5", 499, 76, -19.3f, -39.3f, -8.2872f, 1.0f, 15.8f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(frame, "poste_6", 14, 95, -19.3f, -39.3f, 7.2872f, 1.0f, 15.8f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(frame, "poste_7", 8, 95, -8.2872f, -39.3f, 18.3f, 1.0f, 15.8f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		ModelPartData frame_lado8 = frame.addChild("lado_8", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-22.5), 0));
+		PartDefinition frame_lado8 = frame.addOrReplaceChild("lado_8", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-22.5), 0));
 		c(frame_lado8, "nervio_0_0", 329, 255, -0.5f, -0.25f, -3.8195f, 1.0f, 1.15f, 3.8195f, 0.0f, -39.0f, 20.5655f, -47.1459f, 0.0f);
 		c(frame_lado8, "nervio_1_0", 40, 205, -0.5f, -0.25f, -4.4748f, 1.0f, 1.15f, 4.4748f, 0.0f, -41.8f, 17.9677f, -29.4488f, 0.0f);
 		c(frame_lado8, "nervio_2_0", 317, 255, -0.5f, -0.25f, -3.7745f, 1.0f, 1.15f, 3.7745f, 0.0f, -44.0f, 14.0711f, -23.4159f, 0.0f);
-		ModelPartData frame_lado9 = frame.addChild("lado_9", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-67.5), 0));
+		PartDefinition frame_lado9 = frame.addOrReplaceChild("lado_9", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-67.5), 0));
 		c(frame_lado9, "nervio_0_1", 305, 255, -0.5f, -0.25f, -3.8195f, 1.0f, 1.15f, 3.8195f, 0.0f, -39.0f, 20.5655f, -47.1459f, 0.0f);
 		c(frame_lado9, "nervio_1_1", 27, 205, -0.5f, -0.25f, -4.4748f, 1.0f, 1.15f, 4.4748f, 0.0f, -41.8f, 17.9677f, -29.4488f, 0.0f);
 		c(frame_lado9, "nervio_2_1", 293, 255, -0.5f, -0.25f, -3.7745f, 1.0f, 1.15f, 3.7745f, 0.0f, -44.0f, 14.0711f, -23.4159f, 0.0f);
-		ModelPartData frame_lado10 = frame.addChild("lado_10", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-112.5), 0));
+		PartDefinition frame_lado10 = frame.addOrReplaceChild("lado_10", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-112.5), 0));
 		c(frame_lado10, "nervio_0_2", 281, 255, -0.5f, -0.25f, -3.8195f, 1.0f, 1.15f, 3.8195f, 0.0f, -39.0f, 20.5655f, -47.1459f, 0.0f);
 		c(frame_lado10, "nervio_1_2", 14, 205, -0.5f, -0.25f, -4.4748f, 1.0f, 1.15f, 4.4748f, 0.0f, -41.8f, 17.9677f, -29.4488f, 0.0f);
 		c(frame_lado10, "nervio_2_2", 269, 255, -0.5f, -0.25f, -3.7745f, 1.0f, 1.15f, 3.7745f, 0.0f, -44.0f, 14.0711f, -23.4159f, 0.0f);
-		ModelPartData frame_lado11 = frame.addChild("lado_11", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-157.5), 0));
+		PartDefinition frame_lado11 = frame.addOrReplaceChild("lado_11", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-157.5), 0));
 		c(frame_lado11, "nervio_0_3", 257, 255, -0.5f, -0.25f, -3.8195f, 1.0f, 1.15f, 3.8195f, 0.0f, -39.0f, 20.5655f, -47.1459f, 0.0f);
 		c(frame_lado11, "nervio_1_3", 1, 205, -0.5f, -0.25f, -4.4748f, 1.0f, 1.15f, 4.4748f, 0.0f, -41.8f, 17.9677f, -29.4488f, 0.0f);
 		c(frame_lado11, "nervio_2_3", 245, 255, -0.5f, -0.25f, -3.7745f, 1.0f, 1.15f, 3.7745f, 0.0f, -44.0f, 14.0711f, -23.4159f, 0.0f);
-		ModelPartData frame_lado12 = frame.addChild("lado_12", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-202.5), 0));
+		PartDefinition frame_lado12 = frame.addOrReplaceChild("lado_12", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-202.5), 0));
 		c(frame_lado12, "nervio_0_4", 233, 255, -0.5f, -0.25f, -3.8195f, 1.0f, 1.15f, 3.8195f, 0.0f, -39.0f, 20.5655f, -47.1459f, 0.0f);
 		c(frame_lado12, "nervio_1_4", 499, 197, -0.5f, -0.25f, -4.4748f, 1.0f, 1.15f, 4.4748f, 0.0f, -41.8f, 17.9677f, -29.4488f, 0.0f);
 		c(frame_lado12, "nervio_2_4", 221, 255, -0.5f, -0.25f, -3.7745f, 1.0f, 1.15f, 3.7745f, 0.0f, -44.0f, 14.0711f, -23.4159f, 0.0f);
-		ModelPartData frame_lado13 = frame.addChild("lado_13", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-247.5), 0));
+		PartDefinition frame_lado13 = frame.addOrReplaceChild("lado_13", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-247.5), 0));
 		c(frame_lado13, "nervio_0_5", 209, 255, -0.5f, -0.25f, -3.8195f, 1.0f, 1.15f, 3.8195f, 0.0f, -39.0f, 20.5655f, -47.1459f, 0.0f);
 		c(frame_lado13, "nervio_1_5", 486, 197, -0.5f, -0.25f, -4.4748f, 1.0f, 1.15f, 4.4748f, 0.0f, -41.8f, 17.9677f, -29.4488f, 0.0f);
 		c(frame_lado13, "nervio_2_5", 197, 255, -0.5f, -0.25f, -3.7745f, 1.0f, 1.15f, 3.7745f, 0.0f, -44.0f, 14.0711f, -23.4159f, 0.0f);
-		ModelPartData frame_lado14 = frame.addChild("lado_14", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-292.5), 0));
+		PartDefinition frame_lado14 = frame.addOrReplaceChild("lado_14", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-292.5), 0));
 		c(frame_lado14, "nervio_0_6", 185, 255, -0.5f, -0.25f, -3.8195f, 1.0f, 1.15f, 3.8195f, 0.0f, -39.0f, 20.5655f, -47.1459f, 0.0f);
 		c(frame_lado14, "nervio_1_6", 473, 197, -0.5f, -0.25f, -4.4748f, 1.0f, 1.15f, 4.4748f, 0.0f, -41.8f, 17.9677f, -29.4488f, 0.0f);
 		c(frame_lado14, "nervio_2_6", 173, 255, -0.5f, -0.25f, -3.7745f, 1.0f, 1.15f, 3.7745f, 0.0f, -44.0f, 14.0711f, -23.4159f, 0.0f);
-		ModelPartData frame_lado15 = frame.addChild("lado_15", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-337.5), 0));
+		PartDefinition frame_lado15 = frame.addOrReplaceChild("lado_15", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-337.5), 0));
 		c(frame_lado15, "nervio_0_7", 161, 255, -0.5f, -0.25f, -3.8195f, 1.0f, 1.15f, 3.8195f, 0.0f, -39.0f, 20.5655f, -47.1459f, 0.0f);
 		c(frame_lado15, "nervio_1_7", 460, 197, -0.5f, -0.25f, -4.4748f, 1.0f, 1.15f, 4.4748f, 0.0f, -41.8f, 17.9677f, -29.4488f, 0.0f);
 		c(frame_lado15, "nervio_2_7", 149, 255, -0.5f, -0.25f, -3.7745f, 1.0f, 1.15f, 3.7745f, 0.0f, -44.0f, 14.0711f, -23.4159f, 0.0f);
 
 		// --- dome
-		ModelPartData dome_lado0 = dome.addChild("lado_0", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(0), 0));
+		PartDefinition dome_lado0 = dome.addOrReplaceChild("lado_0", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(0), 0));
 		c(dome_lado0, "cristal_pared_0", 464, 76, -7.6701f, -39.0f, 18.5f, 15.3401f, 15.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(dome_lado0, "cristal_techo_0_0", 79, 189, -7.2736f, 0.0f, -3.6878f, 14.5472f, 1.5f, 3.6878f, 0.0f, -39.0f, 19.0f, -49.3987f, 0.0f);
 		c(dome_lado0, "cristal_techo_1_0", 401, 189, -5.9812f, 0.0f, -4.219f, 11.9625f, 1.5f, 4.219f, 0.0f, -41.8f, 16.6f, -31.4296f, 0.0f);
 		c(dome_lado0, "cristal_techo_2_0", 255, 197, -4.5895f, 0.0f, -3.5341f, 9.179f, 1.5f, 3.5341f, 0.0f, -44.0f, 13.0f, -25.1148f, 0.0f);
-		ModelPartData dome_lado1 = dome.addChild("lado_1", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-45), 0));
+		PartDefinition dome_lado1 = dome.addOrReplaceChild("lado_1", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-45), 0));
 		c(dome_lado1, "cristal_pared_1", 429, 76, -7.6701f, -39.0f, 18.5f, 15.3401f, 15.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(dome_lado1, "cristal_techo_0_1", 40, 189, -7.2736f, 0.0f, -3.6878f, 14.5472f, 1.5f, 3.6878f, 0.0f, -39.0f, 19.0f, -49.3987f, 0.0f);
 		c(dome_lado1, "cristal_techo_1_1", 366, 189, -5.9812f, 0.0f, -4.219f, 11.9625f, 1.5f, 4.219f, 0.0f, -41.8f, 16.6f, -31.4296f, 0.0f);
 		c(dome_lado1, "cristal_techo_2_1", 227, 197, -4.5895f, 0.0f, -3.5341f, 9.179f, 1.5f, 3.5341f, 0.0f, -44.0f, 13.0f, -25.1148f, 0.0f);
-		ModelPartData dome_lado2 = dome.addChild("lado_2", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-90), 0));
+		PartDefinition dome_lado2 = dome.addOrReplaceChild("lado_2", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-90), 0));
 		c(dome_lado2, "cristal_pared_2", 394, 76, -7.6701f, -39.0f, 18.5f, 15.3401f, 15.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(dome_lado2, "cristal_techo_0_2", 1, 189, -7.2736f, 0.0f, -3.6878f, 14.5472f, 1.5f, 3.6878f, 0.0f, -39.0f, 19.0f, -49.3987f, 0.0f);
 		c(dome_lado2, "cristal_techo_1_2", 331, 189, -5.9812f, 0.0f, -4.219f, 11.9625f, 1.5f, 4.219f, 0.0f, -41.8f, 16.6f, -31.4296f, 0.0f);
 		c(dome_lado2, "cristal_techo_2_2", 199, 197, -4.5895f, 0.0f, -3.5341f, 9.179f, 1.5f, 3.5341f, 0.0f, -44.0f, 13.0f, -25.1148f, 0.0f);
-		ModelPartData dome_lado3 = dome.addChild("lado_3", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-135), 0));
+		PartDefinition dome_lado3 = dome.addOrReplaceChild("lado_3", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-135), 0));
 		c(dome_lado3, "cristal_pared_3", 359, 76, -7.6701f, -39.0f, 18.5f, 15.3401f, 15.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(dome_lado3, "cristal_techo_0_3", 447, 180, -7.2736f, 0.0f, -3.6878f, 14.5472f, 1.5f, 3.6878f, 0.0f, -39.0f, 19.0f, -49.3987f, 0.0f);
 		c(dome_lado3, "cristal_techo_1_3", 296, 189, -5.9812f, 0.0f, -4.219f, 11.9625f, 1.5f, 4.219f, 0.0f, -41.8f, 16.6f, -31.4296f, 0.0f);
 		c(dome_lado3, "cristal_techo_2_3", 171, 197, -4.5895f, 0.0f, -3.5341f, 9.179f, 1.5f, 3.5341f, 0.0f, -44.0f, 13.0f, -25.1148f, 0.0f);
-		ModelPartData dome_lado4 = dome.addChild("lado_4", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-180), 0));
+		PartDefinition dome_lado4 = dome.addOrReplaceChild("lado_4", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-180), 0));
 		c(dome_lado4, "cristal_pared_4", 324, 76, -7.6701f, -39.0f, 18.5f, 15.3401f, 15.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(dome_lado4, "cristal_techo_0_4", 408, 180, -7.2736f, 0.0f, -3.6878f, 14.5472f, 1.5f, 3.6878f, 0.0f, -39.0f, 19.0f, -49.3987f, 0.0f);
 		c(dome_lado4, "cristal_techo_1_4", 261, 189, -5.9812f, 0.0f, -4.219f, 11.9625f, 1.5f, 4.219f, 0.0f, -41.8f, 16.6f, -31.4296f, 0.0f);
 		c(dome_lado4, "cristal_techo_2_4", 143, 197, -4.5895f, 0.0f, -3.5341f, 9.179f, 1.5f, 3.5341f, 0.0f, -44.0f, 13.0f, -25.1148f, 0.0f);
-		ModelPartData dome_lado5 = dome.addChild("lado_5", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-225), 0));
+		PartDefinition dome_lado5 = dome.addOrReplaceChild("lado_5", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-225), 0));
 		c(dome_lado5, "cristal_pared_5", 289, 76, -7.6701f, -39.0f, 18.5f, 15.3401f, 15.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(dome_lado5, "cristal_techo_0_5", 369, 180, -7.2736f, 0.0f, -3.6878f, 14.5472f, 1.5f, 3.6878f, 0.0f, -39.0f, 19.0f, -49.3987f, 0.0f);
 		c(dome_lado5, "cristal_techo_1_5", 226, 189, -5.9812f, 0.0f, -4.219f, 11.9625f, 1.5f, 4.219f, 0.0f, -41.8f, 16.6f, -31.4296f, 0.0f);
 		c(dome_lado5, "cristal_techo_2_5", 115, 197, -4.5895f, 0.0f, -3.5341f, 9.179f, 1.5f, 3.5341f, 0.0f, -44.0f, 13.0f, -25.1148f, 0.0f);
-		ModelPartData dome_lado6 = dome.addChild("lado_6", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-270), 0));
+		PartDefinition dome_lado6 = dome.addOrReplaceChild("lado_6", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-270), 0));
 		c(dome_lado6, "cristal_pared_6", 254, 76, -7.6701f, -39.0f, 18.5f, 15.3401f, 15.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(dome_lado6, "cristal_techo_0_6", 330, 180, -7.2736f, 0.0f, -3.6878f, 14.5472f, 1.5f, 3.6878f, 0.0f, -39.0f, 19.0f, -49.3987f, 0.0f);
 		c(dome_lado6, "cristal_techo_1_6", 191, 189, -5.9812f, 0.0f, -4.219f, 11.9625f, 1.5f, 4.219f, 0.0f, -41.8f, 16.6f, -31.4296f, 0.0f);
 		c(dome_lado6, "cristal_techo_2_6", 87, 197, -4.5895f, 0.0f, -3.5341f, 9.179f, 1.5f, 3.5341f, 0.0f, -44.0f, 13.0f, -25.1148f, 0.0f);
-		ModelPartData dome_lado7 = dome.addChild("lado_7", ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(-315), 0));
+		PartDefinition dome_lado7 = dome.addOrReplaceChild("lado_7", CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(-315), 0));
 		c(dome_lado7, "cristal_pared_7", 219, 76, -7.6701f, -39.0f, 18.5f, 15.3401f, 15.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(dome_lado7, "cristal_techo_0_7", 291, 180, -7.2736f, 0.0f, -3.6878f, 14.5472f, 1.5f, 3.6878f, 0.0f, -39.0f, 19.0f, -49.3987f, 0.0f);
 		c(dome_lado7, "cristal_techo_1_7", 156, 189, -5.9812f, 0.0f, -4.219f, 11.9625f, 1.5f, 4.219f, 0.0f, -41.8f, 16.6f, -31.4296f, 0.0f);
 		c(dome_lado7, "cristal_techo_2_7", 59, 197, -4.5895f, 0.0f, -3.5341f, 9.179f, 1.5f, 3.5341f, 0.0f, -44.0f, 13.0f, -25.1148f, 0.0f);
 
-		// --- bateria
-		c(bateria, "bat_0", 439, 402, -5.5f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_1", 434, 402, -4.4f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_2", 429, 402, -3.3f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_3", 424, 402, -2.2f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_4", 419, 402, -1.1f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_5", 414, 402, 0.0f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_6", 409, 402, 1.1f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_7", 404, 402, 2.2f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_8", 399, 402, 3.3f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		c(bateria, "bat_9", 394, 402, 4.4f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		// --- bat_0
+		c(bat_0, "bat_0", 439, 402, -5.5f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_1
+		c(bat_1, "bat_1", 434, 402, -4.4f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_2
+		c(bat_2, "bat_2", 429, 402, -3.3f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_3
+		c(bat_3, "bat_3", 424, 402, -2.2f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_4
+		c(bat_4, "bat_4", 419, 402, -1.1f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_5
+		c(bat_5, "bat_5", 414, 402, 0.0f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_6
+		c(bat_6, "bat_6", 409, 402, 1.1f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_7
+		c(bat_7, "bat_7", 404, 402, 2.2f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_8
+		c(bat_8, "bat_8", 399, 402, 3.3f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+		// --- bat_9
+		c(bat_9, "bat_9", 394, 402, 4.4f, -16.5f, 13.8f, 0.9f, 1.0f, 0.3f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
 		// --- botella
 		c(botella, "botella_cuerpo", 133, 255, 7.3f, -16.7f, 6.6f, 4.5f, 2.4f, 2.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		c(botella, "botella_cuello", 262, 397, 4.9f, -16.1f, 7.2f, 2.4f, 1.2f, 1.2f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
-		return TexturedModelData.of(data, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+		return LayerDefinition.create(mesh, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 	}
 
 	/** Cubo con pivote propio: posición del cubo relativa al pivote, giros en grados (X = pitch, Y = yaw). */
-	private static void c(ModelPartData parent, String name, int u, int v,
+	private static void c(PartDefinition parent, String name, int u, int v,
 						  float x, float y, float z, float sx, float sy, float sz,
 						  float px, float py, float pz, float pitchDeg, float yawDeg) {
-		parent.addChild(
+		parent.addOrReplaceChild(
 				name,
-				ModelPartBuilder.create().uv(u, v).cuboid(x, y, z, sx, sy, sz),
-				ModelTransform.of(px, py, pz, (float) Math.toRadians(pitchDeg), (float) Math.toRadians(yawDeg), 0.0f)
+				CubeListBuilder.create().texOffs(u, v).addBox(x, y, z, sx, sy, sz),
+				PartPose.offsetAndRotation(px, py, pz, (float) Math.toRadians(pitchDeg), (float) Math.toRadians(yawDeg), 0.0f)
 		);
 	}
 }

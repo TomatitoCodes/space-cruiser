@@ -1,44 +1,45 @@
 package com.spacecruiser.item;
 
 import com.spacecruiser.entity.SpaceCruiserEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Supplier;
 
 public class SpaceCruiserItem extends Item {
 	private final Supplier<EntityType<SpaceCruiserEntity>> entityType;
 
-	public SpaceCruiserItem(Settings settings, Supplier<EntityType<SpaceCruiserEntity>> entityType) {
-		super(settings);
+	public SpaceCruiserItem(Properties properties, Supplier<EntityType<SpaceCruiserEntity>> entityType) {
+		super(properties);
 		this.entityType = entityType;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		if (!(world instanceof ServerWorld serverWorld)) {
-			return ActionResult.SUCCESS;
+	public InteractionResult useOn(UseOnContext context) {
+		Level level = context.getLevel();
+		if (!(level instanceof ServerLevel serverLevel)) {
+			return InteractionResult.SUCCESS;
 		}
 
-		BlockPos pos = context.getBlockPos().offset(context.getSide());
-		SpaceCruiserEntity ship = this.entityType.get().create(serverWorld);
+		BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
+		SpaceCruiserEntity ship = this.entityType.get().create(serverLevel, EntitySpawnReason.SPAWN_ITEM_USE);
 		if (ship == null) {
-			return ActionResult.FAIL;
+			return InteractionResult.FAIL;
 		}
 
-		ship.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY() + 0.1, pos.getZ() + 0.5, context.getPlayerYaw(), 0.0f);
-		if (!world.isSpaceEmpty(ship)) {
-			return ActionResult.FAIL;
+		ship.snapTo(pos.getX() + 0.5, pos.getY() + 0.1, pos.getZ() + 0.5, context.getRotation(), 0.0f);
+		if (!level.noCollision(ship)) {
+			return InteractionResult.FAIL;
 		}
 
-		serverWorld.spawnEntity(ship);
-		context.getStack().decrementUnlessCreative(1, context.getPlayer());
-		return ActionResult.CONSUME;
+		serverLevel.addFreshEntity(ship);
+		context.getItemInHand().consume(1, context.getPlayer());
+		return InteractionResult.CONSUME;
 	}
 }

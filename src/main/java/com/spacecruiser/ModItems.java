@@ -2,11 +2,13 @@ package com.spacecruiser;
 
 import com.spacecruiser.entity.SpaceCruiserEntity;
 import com.spacecruiser.item.SpaceCruiserItem;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 
 import java.util.function.Supplier;
 
@@ -22,16 +24,22 @@ public final class ModItems {
 	private ModItems() {
 	}
 
+	private static ResourceKey<Item> key(String id) {
+		return ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(SpaceCruiserMod.MOD_ID, id));
+	}
+
 	private static Item register(String id, Supplier<EntityType<SpaceCruiserEntity>> entityType) {
+		ResourceKey<Item> key = key(id);
 		return Registry.register(
-				Registries.ITEM,
-				Identifier.of(SpaceCruiserMod.MOD_ID, id),
-				new SpaceCruiserItem(new Item.Settings().maxCount(1), entityType)
+				BuiltInRegistries.ITEM,
+				key,
+				new SpaceCruiserItem(new Item.Properties().stacksTo(1).setId(key), entityType)
 		);
 	}
 
 	private static Item part(String id) {
-		return Registry.register(Registries.ITEM, Identifier.of(SpaceCruiserMod.MOD_ID, id), new Item(new Item.Settings()));
+		ResourceKey<Item> key = key(id);
+		return Registry.register(BuiltInRegistries.ITEM, key, new Item(new Item.Properties().setId(key)));
 	}
 
 	/** Solo sirve para forzar la carga de la clase (y con ella el registro). */

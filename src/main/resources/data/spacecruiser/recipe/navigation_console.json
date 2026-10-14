@@ -7,15 +7,9 @@
     "ROR"
   ],
   "key": {
-    "R": {
-      "item": "minecraft:redstone_block"
-    },
-    "O": {
-      "item": "minecraft:ender_eye"
-    },
-    "C": {
-      "item": "minecraft:recovery_compass"
-    }
+    "R": "minecraft:redstone_block",
+    "O": "minecraft:ender_eye",
+    "C": "minecraft:recovery_compass"
   },
   "result": {
     "id": "spacecruiser:navigation_console",

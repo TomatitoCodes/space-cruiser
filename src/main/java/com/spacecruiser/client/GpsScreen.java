@@ -3,19 +3,19 @@ package com.spacecruiser.client;
 import com.spacecruiser.entity.SpaceCruiserEntity;
 import com.spacecruiser.network.GpsActionPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.material.MapColor;
 
 /** Pantalla del GPS del cockpit: mapa del terreno bajo la nave, datos en vivo, batería, destino y recarga. */
 public class GpsScreen extends Screen {
@@ -32,14 +32,14 @@ public class GpsScreen extends Screen {
 
 	private static final int UNKNOWN = 0xFF1C2226;
 
-	private final ButtonWidget[] destinations = new ButtonWidget[3];
+	private final Button[] destinations = new Button[3];
 	private final int[] colors = new int[CELLS * CELLS];
 	private int left;
 	private int top;
 	private int ticks;
 
 	public GpsScreen() {
-		super(Text.translatable("gui.spacecruiser.gps.title"));
+		super(Component.translatable("gui.spacecruiser.gps.title"));
 	}
 
 	@Override
@@ -53,28 +53,28 @@ public class GpsScreen extends Screen {
 		int buttonW = 56;
 		for (int i = 0; i < 3; i++) {
 			int action = actions[i];
-			this.destinations[i] = this.addDrawableChild(
-					ButtonWidget.builder(Text.translatable("gui.spacecruiser.gps.dim." + names[i]),
+			this.destinations[i] = this.addRenderableWidget(
+					Button.builder(Component.translatable("gui.spacecruiser.gps.dim." + names[i]),
 									b -> ClientPlayNetworking.send(new GpsActionPayload(action)))
-							.dimensions(rx + i * (buttonW + 4), this.top + 138, buttonW, 20)
+							.bounds(rx + i * (buttonW + 4), this.top + 138, buttonW, 20)
 							.build());
 		}
-		this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.spacecruiser.gps.recharge"),
+		this.addRenderableWidget(Button.builder(Component.translatable("gui.spacecruiser.gps.recharge"),
 						b -> ClientPlayNetworking.send(new GpsActionPayload(GpsActionPayload.RECHARGE)))
-				.dimensions(rx, this.top + 164, RIGHT_W, 20)
+				.bounds(rx, this.top + 164, RIGHT_W, 20)
 				.build());
 		this.updateMap();
 	}
 
 	@Override
-	public boolean shouldPause() {
+	public boolean isPauseScreen() {
 		return false;
 	}
 
 	@Override
 	public void tick() {
-		if (this.client == null || this.client.player == null || !(this.client.player.getVehicle() instanceof SpaceCruiserEntity)) {
-			this.close();
+		if (this.minecraft == null || this.minecraft.player == null || !(this.minecraft.player.getVehicle() instanceof SpaceCruiserEntity)) {
+			this.onClose();
 			return;
 		}
 		if (++this.ticks % 10 == 0) {
@@ -82,28 +82,28 @@ public class GpsScreen extends Screen {
 		}
 	}
 
-	private RegistryKey<World> currentDimension() {
-		return this.client != null && this.client.world != null ? this.client.world.getRegistryKey() : World.OVERWORLD;
+	private ResourceKey<Level> currentDimension() {
+		return this.minecraft != null && this.minecraft.level != null ? this.minecraft.level.dimension() : Level.OVERWORLD;
 	}
 
 	/** Recalcula los colores del mapa a partir de los chunks cargados alrededor de la nave. */
 	private void updateMap() {
-		if (this.client == null || this.client.world == null || this.client.player == null) {
+		if (this.minecraft == null || this.minecraft.level == null || this.minecraft.player == null) {
 			return;
 		}
-		ClientWorld world = this.client.world;
-		BlockPos center = this.client.player.getBlockPos();
-		boolean ceiling = world.getDimension().hasCeiling();
+		ClientLevel world = this.minecraft.level;
+		BlockPos center = this.minecraft.player.blockPosition();
+		boolean ceiling = world.dimensionType().hasCeiling();
 		int half = CELLS / 2;
 		int[] heights = new int[CELLS * CELLS];
-		BlockPos.Mutable pos = new BlockPos.Mutable();
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
 		for (int cz = 0; cz < CELLS; cz++) {
 			for (int cx = 0; cx < CELLS; cx++) {
 				int wx = center.getX() + (cx - half) * BLOCKS_PER_CELL;
 				int wz = center.getZ() + (cz - half) * BLOCKS_PER_CELL;
 				int index = cz * CELLS + cx;
-				if (world.getChunkManager().getChunk(wx >> 4, wz >> 4, ChunkStatus.FULL, false) == null) {
+				if (world.getChunkSource().getChunk(wx >> 4, wz >> 4, ChunkStatus.FULL, false) == null) {
 					this.colors[index] = UNKNOWN;
 					heights[index] = Integer.MIN_VALUE;
 					continue;
@@ -111,17 +111,17 @@ public class GpsScreen extends Screen {
 
 				int y;
 				if (ceiling) {
-					y = Math.min(center.getY() + 2, world.getTopY() - 1);
+					y = Math.min(center.getY() + 2, world.getMaxY());
 				} else {
-					y = world.getTopY(Heightmap.Type.WORLD_SURFACE, wx, wz) - 1;
+					y = world.getHeight(Heightmap.Types.WORLD_SURFACE, wx, wz) - 1;
 				}
 				int rgb = -1;
-				for (; y >= world.getBottomY(); y--) {
+				for (; y >= world.getMinY(); y--) {
 					pos.set(wx, y, wz);
 					BlockState state = world.getBlockState(pos);
 					MapColor mapColor = state.getMapColor(world, pos);
-					if (mapColor != MapColor.CLEAR) {
-						rgb = mapColor.color;
+					if (mapColor != MapColor.NONE) {
+						rgb = mapColor.col;
 						break;
 					}
 				}
@@ -148,15 +148,15 @@ public class GpsScreen extends Screen {
 
 	/** Se dibujan el panel, el mapa y los datos como fondo; los botones los pinta después Screen.render. */
 	@Override
-	public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
-		super.renderBackground(ctx, mouseX, mouseY, delta);
-		if (this.client == null || this.client.player == null) {
+	public void extractBackground(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
+		super.extractBackground(ctx, mouseX, mouseY, delta);
+		if (this.minecraft == null || this.minecraft.player == null) {
 			return;
 		}
-		RegistryKey<World> dim = currentDimension();
-		this.destinations[0].active = dim != World.OVERWORLD;
-		this.destinations[1].active = dim != World.NETHER;
-		this.destinations[2].active = dim != World.END;
+		ResourceKey<Level> dim = currentDimension();
+		this.destinations[0].active = dim != Level.OVERWORLD;
+		this.destinations[1].active = dim != Level.NETHER;
+		this.destinations[2].active = dim != Level.END;
 
 		int x0 = this.left;
 		int y0 = this.top;
@@ -166,10 +166,10 @@ public class GpsScreen extends Screen {
 
 		int cyan = 0xFF6EE6FF;
 		int white = 0xFFE6F7FA;
-		ctx.drawText(this.textRenderer, this.title, x0 + 8, y0 + 4, cyan, false);
+		ctx.text(this.font, this.title, x0 + 8, y0 + 4, cyan, false);
 
-		var player = this.client.player;
-		float yaw = player.getVehicle() != null ? player.getVehicle().getYaw() : player.getYaw();
+		var player = this.minecraft.player;
+		float yaw = player.getVehicle() != null ? player.getVehicle().getYRot() : player.getYRot();
 
 		// Mapa (norte arriba). Cada fila se pinta por tramos del mismo color para no saturar de rectángulos.
 		int mx = x0 + 8;
@@ -202,37 +202,37 @@ public class GpsScreen extends Screen {
 		}
 		ctx.fill(cx - 3, cy - 3, cx + 3, cy + 3, 0xFF000000);
 		ctx.fill(cx - 2, cy - 2, cx + 2, cy + 2, 0xFFFFFFFF);
-		ctx.drawText(this.textRenderer, "N", mx + MAP_PX / 2 - 2, my + 2, 0xFFFFFFFF, true);
+		ctx.text(this.font, "N", mx + MAP_PX / 2 - 2, my + 2, 0xFFFFFFFF, true);
 
 		// Datos en vivo
 		int rx = mx + MAP_PX + 10;
 		String pos = String.format("X %.0f   Y %.0f   Z %.0f", player.getX(), player.getY(), player.getZ());
-		ctx.drawText(this.textRenderer, Text.translatable("gui.spacecruiser.gps.position"), rx, y0 + 22, cyan, false);
-		ctx.drawText(this.textRenderer, pos, rx, y0 + 33, white, false);
+		ctx.text(this.font, Component.translatable("gui.spacecruiser.gps.position"), rx, y0 + 22, cyan, false);
+		ctx.text(this.font, pos, rx, y0 + 33, white, false);
 
-		float heading = MathHelper.wrapDegrees(yaw + 180.0f);
+		float heading = Mth.wrapDegrees(yaw + 180.0f);
 		if (heading < 0) {
 			heading += 360.0f;
 		}
 		String dir = DIRS[Math.round(heading / 45.0f) % 8];
-		ctx.drawText(this.textRenderer, Text.translatable("gui.spacecruiser.gps.heading"), rx, y0 + 48, cyan, false);
-		ctx.drawText(this.textRenderer, Text.translatable("gui.spacecruiser.gps.dir." + dir).append(String.format("  %.0f°", heading)),
+		ctx.text(this.font, Component.translatable("gui.spacecruiser.gps.heading"), rx, y0 + 48, cyan, false);
+		ctx.text(this.font, Component.translatable("gui.spacecruiser.gps.dir." + dir).append(String.format("  %.0f°", heading)),
 				rx, y0 + 59, white, false);
 
-		String dimName = dim == World.OVERWORLD ? "overworld" : dim == World.NETHER ? "nether" : dim == World.END ? "end" : null;
-		ctx.drawText(this.textRenderer, Text.translatable("gui.spacecruiser.gps.dimension"), rx + 90, y0 + 48, cyan, false);
-		ctx.drawText(this.textRenderer,
-				dimName != null ? Text.translatable("gui.spacecruiser.gps.dim." + dimName) : Text.literal(dim.getValue().getPath()),
+		String dimName = dim == Level.OVERWORLD ? "overworld" : dim == Level.NETHER ? "nether" : dim == Level.END ? "end" : null;
+		ctx.text(this.font, Component.translatable("gui.spacecruiser.gps.dimension"), rx + 90, y0 + 48, cyan, false);
+		ctx.drawText(this.font,
+				dimName != null ? Component.translatable("gui.spacecruiser.gps.dim." + dimName) : Component.literal(dim.identifier().getPath()),
 				rx + 90, y0 + 59, white, false);
 
 		// Batería del reactor: barra de 10 tramos, sin cifras.
 		float battery = player.getVehicle() instanceof SpaceCruiserEntity ship ? ship.getBattery() : 0.0f;
-		ctx.drawText(this.textRenderer, Text.translatable("gui.spacecruiser.gps.battery"), rx, y0 + 76, cyan, false);
+		ctx.text(this.font, Component.translatable("gui.spacecruiser.gps.battery"), rx, y0 + 76, cyan, false);
 		int lit = (int) Math.ceil(battery - 0.001f);
 		for (int i = 0; i < 10; i++) {
 			int bx = rx + i * 17;
 			ctx.fill(bx, y0 + 88, bx + 15, y0 + 98, i < lit ? 0xFFFF9923 : 0xFF2A2F33);
 		}
-		ctx.drawText(this.textRenderer, Text.translatable("gui.spacecruiser.gps.destination"), rx, y0 + 124, cyan, false);
+		ctx.text(this.font, Component.translatable("gui.spacecruiser.gps.destination"), rx, y0 + 124, cyan, false);
 	}
 }

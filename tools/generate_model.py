@@ -269,7 +269,7 @@ def build():
     add("bateria_marco", "body", (-6.3, FLOOR + 0.8, -14.5), (6.3, FLOOR + 3.2, -14.1), "pod")
     for i in range(10):
         xa = -5.5 + i * 1.1
-        add("bat_%d" % i, "bateria", (xa, FLOOR + 1.5, -14.1), (xa + 0.9, FLOOR + 2.5, -13.8), "orange")
+        add("bat_%d" % i, "bat_%d" % i, (xa, FLOOR + 1.5, -14.1), (xa + 0.9, FLOOR + 2.5, -13.8), "orange")
 
     # --- Guiño: botella de cristal con líquido verde en el suelo, junto al reposabrazos derecho (decorativa)
     # Tumbada, pequeña, con el alcohol desparramado por el suelo. Cuello hacia el centro de la cabina.
@@ -552,7 +552,7 @@ def java_for(c):
 
 
 def write_java():
-    groups = ["body", "glow", "frame", "dome", "bateria", "botella"]
+    groups = ["body", "glow", "frame", "dome"] + ["bat_%d" % i for i in range(10)] + ["botella"]
     lines = []
     for g in groups:
         lines.append("")
@@ -566,18 +566,18 @@ def write_java():
                 continue
             var = "%s_lado%d" % (g, k)
             yaw_g = -45 * k if k < 8 else -45 * (k - 8) - 22.5
-            lines.append("\t\tModelPartData %s = %s.addChild(\"lado_%d\", ModelPartBuilder.create(), "
-                         "ModelTransform.of(0, 0, 0, 0, (float) Math.toRadians(%s), 0));" % (var, g, k, ("%g" % yaw_g)))
+            lines.append("\t\tPartDefinition %s = %s.addOrReplaceChild(\"lado_%d\", CubeListBuilder.create(), "
+                         "PartPose.offsetAndRotation(0, 0, 0, 0, (float) Math.toRadians(%s), 0));" % (var, g, k, ("%g" % yaw_g)))
             for c in side:
                 lines.append(call(var, c))
 
     src = '''package com.spacecruiser.client;
 
-import net.minecraft.client.model.ModelData;
-import net.minecraft.client.model.ModelPartBuilder;
-import net.minecraft.client.model.ModelPartData;
-import net.minecraft.client.model.ModelTransform;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.geom.builders.PartPose;
 
 /**
  * GENERADO por tools/generate_model.py a partir del modelo de Blockbench. No editar a mano:
@@ -590,7 +590,7 @@ import net.minecraft.client.model.TexturedModelData;
  *  - glow:  franjas luminosas y fuego de los propulsores (brillo máximo)
  *  - frame: postes y tapa de la cúpula (opaco, se oculta en primera persona)
  *  - dome:  cristal de la cúpula (translúcido, se oculta en primera persona)
- *  - bateria: los 10 pilotos de la batería (brillo máximo; el renderer enciende solo los que tocan)
+ *  - bat_0..bat_9: los 10 pilotos de la batería (brillo máximo; el renderer dibuja solo los que tocan)
  *
  * Textura "space_cruiser.png": atlas de %dx%d con un rectángulo plano de color por cubo.
  */
@@ -601,33 +601,34 @@ public final class SpaceCruiserModel {
 	private SpaceCruiserModel() {
 	}
 
-	public static TexturedModelData getTexturedModelData() {
-		ModelData data = new ModelData();
-		ModelPartData root = data.getRoot();
+	public static LayerDefinition createLayer() {
+		MeshDefinition mesh = new MeshDefinition();
+		PartDefinition root = mesh.getRoot();
 
-		ModelPartData body = root.addChild("body", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData glow = root.addChild("glow", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData frame = root.addChild("frame", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData dome = root.addChild("dome", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData bateria = root.addChild("bateria", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
-		ModelPartData botella = root.addChild("botella", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
+		PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition glow = root.addOrReplaceChild("glow", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition frame = root.addOrReplaceChild("frame", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		PartDefinition dome = root.addOrReplaceChild("dome", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+@@BAT@@		PartDefinition botella = root.addOrReplaceChild("botella", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
 %s
 
-		return TexturedModelData.of(data, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+		return LayerDefinition.create(mesh, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 	}
 
 	/** Cubo con pivote propio: posición del cubo relativa al pivote, giros en grados (X = pitch, Y = yaw). */
-	private static void c(ModelPartData parent, String name, int u, int v,
+	private static void c(PartDefinition parent, String name, int u, int v,
 						  float x, float y, float z, float sx, float sy, float sz,
 						  float px, float py, float pz, float pitchDeg, float yawDeg) {
-		parent.addChild(
+		parent.addOrReplaceChild(
 				name,
-				ModelPartBuilder.create().uv(u, v).cuboid(x, y, z, sx, sy, sz),
-				ModelTransform.of(px, py, pz, (float) Math.toRadians(pitchDeg), (float) Math.toRadians(yawDeg), 0.0f)
+				CubeListBuilder.create().texOffs(u, v).addBox(x, y, z, sx, sy, sz),
+				PartPose.offsetAndRotation(px, py, pz, (float) Math.toRadians(pitchDeg), (float) Math.toRadians(yawDeg), 0.0f)
 		);
 	}
 }
 ''' % (TEX_W, TEX_H, TEX_W, TEX_H, "\n".join(lines))
+    bat = "".join('\t\tPartDefinition bat_%d = root.addOrReplaceChild("bat_%d", CubeListBuilder.create(), PartPose.offset(0, 24, 0));\n' % (i, i) for i in range(10))
+    src = src.replace("@@BAT@@", bat)
     with open(JAVA_OUT, "w", encoding="utf-8") as f:
         f.write(src)
 

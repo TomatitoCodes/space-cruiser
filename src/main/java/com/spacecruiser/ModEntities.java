@@ -1,12 +1,14 @@
 package com.spacecruiser;
 
 import com.spacecruiser.entity.SpaceCruiserEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.Item;
 
 import java.util.function.Supplier;
 
@@ -26,15 +28,16 @@ public final class ModEntities {
 	}
 
 	private static EntityType<SpaceCruiserEntity> register(String id, float scale, Supplier<Item> item) {
+		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(SpaceCruiserMod.MOD_ID, id));
 		return Registry.register(
-				Registries.ENTITY_TYPE,
-				Identifier.of(SpaceCruiserMod.MOD_ID, id),
-				EntityType.Builder.<SpaceCruiserEntity>create(
-								(type, world) -> new SpaceCruiserEntity(type, world, scale, item), SpawnGroup.MISC)
-						.dimensions(WIDTH * scale, HEIGHT * scale)
+				BuiltInRegistries.ENTITY_TYPE,
+				key,
+				EntityType.Builder.<SpaceCruiserEntity>of(
+								(type, level) -> new SpaceCruiserEntity(type, level, scale, item), MobCategory.MISC)
+						.sized(WIDTH * scale, HEIGHT * scale)
 						.passengerAttachments(PILOT_HEIGHT * scale)
-						.maxTrackingRange(10)
-						.build(id)
+						.clientTrackingRange(10)
+						.build(key)
 		);
 	}
 

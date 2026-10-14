@@ -29,6 +29,18 @@ jobs:
           grep -E "error:|warning: \[removal\]" -A2 build.log | head -40 | while IFS= read -r l; do echo "::error::$l"; done
           exit $code
 
+      # Errores completos de compilación en una rama aparte (las anotaciones de GitHub se cortan a ~10).
+      - name: Publicar errores de compilación
+        if: always() && github.ref == 'refs/heads/mc-26.3'
+        run: |
+          rm -rf /tmp/log && mkdir /tmp/log && cd /tmp/log
+          grep -E "error:|warning: \[removal\]|FAILED|What went wrong|Caused by" -A3 "$GITHUB_WORKSPACE/build.log" > errors.txt || true
+          cp "$GITHUB_WORKSPACE/build.log" build.log || true
+          git init -q && git checkout -q -b build-log
+          git config user.name "ci" && git config user.email "ci@example.com"
+          git add -A && git commit -q -m "Log de compilación $GITHUB_SHA"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" build-log
+
       - name: Subir el jar
         uses: actions/upload-artifact@v4
         with:
