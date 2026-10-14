@@ -3,6 +3,7 @@ package com.spacecruiser.client;
 import com.spacecruiser.ModEntities;
 import com.spacecruiser.SpaceCruiserMod;
 import com.spacecruiser.entity.SpaceCruiserEntity;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -15,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public class SpaceCruiserClient implements ClientModInitializer {
 	public static final ModelLayerLocation MODEL_LAYER =
@@ -30,13 +30,13 @@ public class SpaceCruiserClient implements ClientModInitializer {
 
 		KeyMapping descendKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.spacecruiser.descend",
-				GLFW.GLFW_KEY_LEFT_CONTROL,
+				InputConstants.KEY_LCONTROL,
 				KeyMapping.Category.MOVEMENT
 		));
 
 		KeyMapping gpsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.spacecruiser.gps",
-				GLFW.GLFW_KEY_G,
+				InputConstants.KEY_G,
 				KeyMapping.Category.MOVEMENT
 		));
 

@@ -221,7 +221,7 @@ public class GpsScreen extends Screen {
 
 		String dimName = dim == Level.OVERWORLD ? "overworld" : dim == Level.NETHER ? "nether" : dim == Level.END ? "end" : null;
 		ctx.text(this.font, Component.translatable("gui.spacecruiser.gps.dimension"), rx + 90, y0 + 48, cyan, false);
-		ctx.drawText(this.font,
+		ctx.text(this.font,
 				dimName != null ? Component.translatable("gui.spacecruiser.gps.dim." + dimName) : Component.literal(dim.identifier().getPath()),
 				rx + 90, y0 + 59, white, false);
 

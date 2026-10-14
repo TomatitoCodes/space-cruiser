@@ -78,12 +78,12 @@ public class SpaceCruiserRenderer extends EntityRenderer<SpaceCruiserEntity, Spa
 		poseStack.scale(state.modelScale, state.modelScale, state.modelScale);
 
 		// Orientación: tras esta rotación, +Z local es el morro de la nave.
-		poseStack.mulPose(Axis.YP.rotationDegrees(-state.yRot));
+		poseStack.rotateDegrees(Axis.YP, -state.yRot);
 
 		// Inclinación según el movimiento (morro abajo al avanzar, alabeo al desplazarse).
 		poseStack.translate(0.0, 1.2, 0.0);
-		poseStack.mulPose(Axis.XP.rotationDegrees(state.leanPitch));
-		poseStack.mulPose(Axis.ZP.rotationDegrees(state.leanRoll));
+		poseStack.rotateDegrees(Axis.XP, state.leanPitch);
+		poseStack.rotateDegrees(Axis.ZP, state.leanRoll);
 		poseStack.translate(0.0, -1.2, 0.0);
 
 		// Convención de modelos de entidad: eje Y invertido y origen a 24 px del suelo.

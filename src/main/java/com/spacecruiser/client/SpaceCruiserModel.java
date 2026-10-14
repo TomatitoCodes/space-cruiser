@@ -4,7 +4,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.model.geom.builders.PartPose;
+import net.minecraft.client.model.geom.PartPose;
 
 /**
  * GENERADO por tools/generate_model.py a partir del modelo de Blockbench. No editar a mano:
