@@ -58,7 +58,8 @@ jobs:
         run: |
           ./gradlew genSources --stacktrace 2>&1 | tail -15 | while IFS= read -r l; do echo "::notice::$l"; done || true
           mkdir -p mcsources
-          find / -name '*-sources.jar' -size +500k -not -path '*/build/libs/*' 2>/dev/null | head -20 | while IFS= read -r f; do echo "::notice::FOUND $f $(stat -c %s "$f")"; cp "$f" mcsources/ || true; done
+          find "$GITHUB_WORKSPACE/.gradle" "$HOME/.gradle" -name '*.jar' -size +2M \( -ipath '*loom*' -o -ipath '*minecraft*' \) 2>/dev/null | grep -i 'source\|merged\|minecraft' | head -20 | while IFS= read -r f; do echo "::notice::FOUND $f $(stat -c %s "$f")"; done
+          find "$GITHUB_WORKSPACE/.gradle" "$HOME/.gradle" -name '*-sources.jar' -size +2M \( -ipath '*loom*' -o -ipath '*minecraft*' \) 2>/dev/null | head -5 | while IFS= read -r f; do cp "$f" "mcsources/$(echo "$f" | md5sum | cut -c1-6)-$(basename "$f")" || true; done
           ls -la mcsources
 
       # Los artefactos no siempre se pueden descargar: se publican también en una rama aparte (solo para consulta).
