@@ -60,9 +60,17 @@ public class SpaceCruiserEntity extends Entity {
 	private static final double ACCELERATION = 0.06;
 	private static final double VERTICAL_ACCELERATION = 0.04;
 	private static final double HORIZONTAL_DRAG = 0.92;
+	/** Sin tocar W/S/A/D la nave planea: pierde velocidad despacio (inercia). */
+	private static final double GLIDE_DRAG = 0.965;
+	/** Frenada extra al pulsar S mientras la nave avanza. */
+	private static final double BRAKE_DRAG = 0.9;
+	/** Velocidad horizontal máxima (bloques por tick). Ahora coincide con la velocidad límite por rozamiento (~0,69). */
+	private static final double MAX_SPEED = 0.7;
+	/** Sin pulsar subir/bajar la altura se estabiliza rápido (la nave se queda flotando). */
+	private static final double VERTICAL_HOVER_DRAG = 0.8;
 	private static final double VERTICAL_DRAG = 0.88;
 	/** Giro máximo con A/D en vista de cabina, en grados por tick. */
-	private static final float TURN_SPEED = 3.5f;
+	private static final float TURN_SPEED = 3.2f;
 	/** Giro máximo hacia donde mira el piloto en tercera persona, en grados por tick. */
 	private static final float FOLLOW_TURN_SPEED = 10.0f;
 
@@ -330,7 +338,7 @@ public class SpaceCruiserEntity extends Entity {
 				// Vista de cabina: A/D giran la nave y la mirada del piloto queda libre; el piloto gira con la cabina,
 				// así que lo que ve no cambia al virar.
 				float targetTurn = (float) (-side * TURN_SPEED);
-				this.turnVelocity += (targetTurn - this.turnVelocity) * 0.3f;
+				this.turnVelocity += (targetTurn - this.turnVelocity) * 0.18f;
 				if (Math.abs(this.turnVelocity) > 0.01f) {
 					this.setYaw(this.getYaw() + this.turnVelocity);
 					pilot.setYaw(pilot.getYaw() + this.turnVelocity);
@@ -359,9 +367,20 @@ public class SpaceCruiserEntity extends Entity {
 				vy -= VERTICAL_ACCELERATION;
 			}
 
-			vx *= HORIZONTAL_DRAG;
-			vz *= HORIZONTAL_DRAG;
-			vy *= VERTICAL_DRAG;
+			boolean thrust = Math.abs(forward) > 0.01 || Math.abs(side) > 0.01;
+			double drag = thrust ? HORIZONTAL_DRAG : GLIDE_DRAG;
+			if (forward < -0.01) {
+				drag *= BRAKE_DRAG;
+			}
+			vx *= drag;
+			vz *= drag;
+			double horizontal = Math.sqrt(vx * vx + vz * vz);
+			if (horizontal > MAX_SPEED) {
+				vx *= MAX_SPEED / horizontal;
+				vz *= MAX_SPEED / horizontal;
+			}
+			boolean vertical = ascendInput.getAsBoolean() || descendInput.getAsBoolean();
+			vy *= vertical ? VERTICAL_DRAG : VERTICAL_HOVER_DRAG;
 		} else {
 			// Sin piloto: se frena y desciende despacio hasta posarse.
 			vx *= 0.8;

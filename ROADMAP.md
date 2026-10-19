@@ -92,7 +92,7 @@ Un "navegador GPS" con pantalla dentro de la nave. En primera persona, al intera
 - [x] Cámara exterior: la de tercera persona de siempre (F5); sin ajustes propios todavía
 - [x] La mirada del piloto es libre 90° a cada lado de la proa (180° en total) sin girar la nave
 - [x] Controles de vuelo: W/S avanzar y frenar, A/D girar la nave (solo en primera persona; en tercera, como antes: la nave sigue la mirada y A/D desplazan de lado), Espacio sube y Ctrl baja
-- [ ] Velocidad máxima, inercia y giro
+- [x] Velocidad máxima (0,7 bloques/tick), inercia (planea al soltar las teclas, frena más con S, se queda flotando en vertical) y giro más pesado (v2.14, pendiente de ajustar probando)
 - [ ] Mejorar la experiencia de manejo en general (se concretará probando la nave)
 
 ## Decisiones tomadas
