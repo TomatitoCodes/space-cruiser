@@ -110,6 +110,10 @@ def build():
     #     extremo interior (sin solaparse con los vecinos) y detrás hay placas octogonales
     #     del mismo color que tapan los huecos de las esquinas.
     THICK = 2.0
+    # Los paneles de cada lado se solapan con los vecinos en la junta radial (son rectángulos y la junta es
+    # diagonal). Si dos capas superiores quedan a la misma altura, el render las pelea y aparece una línea:
+    # los lados impares se elevan 0,25 px para que siempre gane uno de los dos.
+    SEAM_LIFT = 0.25
     r_in_top, y_in_top = SILL_OUT + 2.0, 22.0   # la pendiente acaba 2 px antes: ahí empieza el anillo plano
     R0 = R - 0.4          # las pendientes arrancan dentro del muro del borde: así no comparten cara con él
     n_top = 8
@@ -130,26 +134,27 @@ def build():
 
     for k in range(8):
         L = k
+        lift = SEAM_LIFT * (k % 2)
         for i in range(n_top):
             r_a = R0 - dr_t * i
-            y_a = yt + dy_t * i
+            y_a = yt + dy_t * i + lift
             w = (r_a - dr_t / 2) * T + 0.25   # anchura media del tramo: huecos y solapes de solo ~0,3 px en la arista
             add("pend_sup_%d_%d" % (i, k), "body", (-w, y_a - THICK, -r_a), (w, y_a, -r_a + len_t), "hull", L,
                 origin=(0, y_a, -r_a), rot=(-ang_t, 0, 0))
         for i in range(n_bot):
             r_a = R0 - dr_b * i
-            y_a = yb - dy_b * i
+            y_a = yb - dy_b * i + lift
             w = (r_a - dr_b / 2) * T
             add("pend_inf_%d_%d" % (i, k), "body", (-w, y_a, -r_a), (w, y_a + THICK, -r_a + len_b), "dark", L,
                 origin=(0, y_a, -r_a), rot=(ang_b, 0, 0))
         # Placas planas de relleno justo bajo la superficie: lo que se ve por las juntas es casi del mismo tono y altura
         for i in range(n_top):
             r_a = R0 - dr_t * i
-            y_a = yt + dy_t * i
+            y_a = yt + dy_t * i + lift
             add("soporte_sup_%d_%d" % (i, k), "body", (-r_a * T, y_a - 1.05, -r_a), (r_a * T, y_a - 0.05, -(r_a - dr_t)), "hull", L)
         for i in range(n_bot):
             r_a = R0 - dr_b * i
-            y_a = yb - dy_b * i
+            y_a = yb - dy_b * i + lift
             add("soporte_inf_%d_%d" % (i, k), "body", (-r_a * T, y_a + 0.05, -r_a), (r_a * T, y_a + 1.05, -(r_a - dr_b)), "dark", L)
         # Muro del borde: anchura completa hasta la arista (sin muescas en las esquinas) y alturas desfasadas
         # 0,01 px entre lados alternos para que las tapas solapadas no parpadeen.
@@ -162,7 +167,7 @@ def build():
         for j in range(2):
             r_out = SILL_OUT + 2.0 - j
             w_flat = (r_out - 0.5) * T
-            add("anillo_plano_%d_%d" % (j, k), "body", (-w_flat, y_in_top - 2.0, -r_out), (w_flat, y_in_top, -(r_out - 1.0)), "hull", L)
+            add("anillo_plano_%d_%d" % (j, k), "body", (-w_flat, y_in_top - 2.0 + lift, -r_out), (w_flat, y_in_top + lift, -(r_out - 1.0)), "hull", L)
         # borde opaco bajo el cristal (hueco por dentro: no hay bloque macizo)
         w_sill = (SILL_OUT + SILL_IN) / 2 * T
         add("borde_cupula_%d" % k, "body", (-w_sill, yb, -SILL_OUT), (w_sill, SILL_TOP, -SILL_IN), "dark", L)
